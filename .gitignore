@@ -1,0 +1,4 @@
+/kitex/pkg/data
+/kitex/rpc/*/output
+/kitex/pkg/configs/es/plugins
+/.github
