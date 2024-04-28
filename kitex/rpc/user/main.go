@@ -4,6 +4,7 @@ import (
 	"net"
 	user "work/kitex_gen/user/userservice"
 	conf "work/rpc/rpc_conf"
+	"work/rpc/user/conf_loader"
 
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -11,7 +12,15 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
+func Init() {
+	if err := conf_loader.Run(); err != nil {
+		panic(err)
+	}
+}
+
 func main() {
+	Init()
+
 	r, err := etcd.NewEtcdRegistry([]string{conf.EtcdAddress})
 	if err != nil {
 		panic(err)

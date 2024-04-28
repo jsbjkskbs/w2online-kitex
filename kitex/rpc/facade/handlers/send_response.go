@@ -7,17 +7,39 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
+type _Base struct {
+	Code int64  `json:"code"`
+	Msg  string `json:"msg"`
+}
 type Response struct {
-	Code int64       `json:"code"`
-	Msg  string      `json:"msg"`
+	Base _Base `json:"base"`
+}
+type ResponseWithExtraMsg struct {
+	Base _Base       `json:"base"`
 	Data interface{} `json:"data"`
 }
 
-func SendResponse(c *app.RequestContext, err error, data interface{}) {
+func SendResponse(c *app.RequestContext, err error, extra *map[string]interface{}) {
 	errCopy := errmsg.Convert(err)
-	c.JSON(consts.StatusOK, Response{
-		Code: errCopy.ErrorCode,
-		Msg:  errCopy.ErrorMsg,
-		Data: data,
+	if extra == nil {
+		c.JSON(consts.StatusOK, Response{
+			Base: _Base{
+				Code: errCopy.ErrorCode,
+				Msg:  errCopy.ErrorMsg,
+			},
+		})
+		return
+	}
+
+	c.JSON(consts.StatusOK, ResponseWithExtraMsg{
+		Base: _Base{
+			Code: errCopy.ErrorCode,
+			Msg:  errCopy.ErrorMsg,
+		},
+		Data: extra,
 	})
+}
+
+func SendFormedResponse(c *app.RequestContext, resp interface{}) {
+	c.JSON(consts.StatusOK, resp)
 }

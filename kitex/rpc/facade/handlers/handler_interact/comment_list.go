@@ -22,7 +22,7 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, map[string]interface{}{
+	handlers.SendResponse(c, errmsg.NoError, &map[string]interface{}{
 		"data": data,
 	})
 }

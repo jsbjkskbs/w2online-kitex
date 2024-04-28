@@ -6,25 +6,48 @@ import (
 	"work/pkg/errmsg"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
+	"work/rpc/facade/model/base"
+	facade_user "work/rpc/facade/model/base/user"
+	"work/rpc/facade/mw/jwt"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
 func UserLogin(ctx context.Context, c *app.RequestContext) {
-	var req user.UserLoginRequest
-	if err := c.BindAndValidate(&req); err != nil {
+	var facadeReq facade_user.UserLoginRequest
+	if err := c.BindAndValidate(&facadeReq); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
 
+	req := user.UserLoginRequest{
+		Username: facadeReq.Username,
+		Password: facadeReq.Password,
+		Code:     facadeReq.Code,
+	}
 	data, err := client.UserLogin(ctx, &req)
 	if err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		return
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, map[string]interface{}{
-		"data":          data,
-		"Access-Token":  c.GetString("Access-Token"),
-		"Refresh-Token": c.GetString("Refresh-Token"),
+	jwt.AccessTokenJwtMiddleware.LoginHandler(ctx, c)
+	jwt.RefreshTokenJwtMiddleware.LoginHandler(ctx, c)
+
+	handlers.SendFormedResponse(c, &facade_user.UserLoginResponse{
+		Base: &base.Status{
+			Code: errmsg.NoError.ErrorCode,
+			Msg:  errmsg.NoError.ErrorMsg,
+		},
+		Data: &base.User{
+			Uid:       data.Uid,
+			Username:  data.Username,
+			AvatarUrl: data.AvatarUrl,
+			CreatedAt: data.CreatedAt,
+			DeletedAt: data.DeletedAt,
+			UpdatedAt: data.UpdatedAt,
+		},
+		AccessToken:  c.GetString("Access-Token"),
+		RefreshToken: c.GetString("Refresh-Token"),
 	})
 }

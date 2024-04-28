@@ -17,12 +17,13 @@ func VideoVisit(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
+	req.FromIp = c.ClientIP()
 	data, err := client.VideoVisit(ctx, &req)
 	if err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, map[string]interface{}{
+	handlers.SendResponse(c, errmsg.NoError, &map[string]interface{}{
 		"data": data,
 	})
 }

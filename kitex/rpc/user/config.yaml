@@ -1,0 +1,9 @@
+MysqlDSN: "work:work123456@tcp(localhost:13306)/work"
+
+DefaultAvatarUrl: "test.url/111.png"
+
+Oss:
+    bucket: "your bucket"
+    secretKey: "your secret key"
+    accessKey: "your access key"
+    url: "your url"

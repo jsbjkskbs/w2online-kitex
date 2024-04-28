@@ -6,23 +6,40 @@ import (
 	"work/pkg/errmsg"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
+	"work/rpc/facade/model/base"
+	facade_user "work/rpc/facade/model/base/user"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
 func UserInfo(ctx context.Context, c *app.RequestContext) {
-	var req user.UserInfoRequest
-	if err := c.BindAndValidate(&req); err != nil {
+	var facadeReq facade_user.UserInfoRequest
+	if err := c.BindAndValidate(&facadeReq); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
 
+	req := user.UserInfoRequest{
+		UserId: facadeReq.UserId,
+	}
 	data, err := client.UserInfo(ctx, &req)
 	if err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		return
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, map[string]interface{}{
-		"data": data,
+	handlers.SendFormedResponse(c, &facade_user.UserInfoResponse{
+		Base: &base.Status{
+			Code: errmsg.NoError.ErrorCode,
+			Msg:  errmsg.NoError.ErrorMsg,
+		},
+		Data: &base.User{
+			Uid:       data.Uid,
+			Username:  data.Username,
+			AvatarUrl: data.AvatarUrl,
+			CreatedAt: data.CreatedAt,
+			UpdatedAt: data.UpdatedAt,
+			DeletedAt: data.DeletedAt,
+		},
 	})
 }

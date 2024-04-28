@@ -939,10 +939,7 @@ func (p *UserLoginResponse) Field2DeepEqual(src *base.User) bool {
 }
 
 type UserInfoRequest struct {
-	UserId       string `thrift:"user_id,1" frugal:"1,default,string" json:"user_id"`
-	Token        string `thrift:"token,2" frugal:"2,default,string" json:"token"`
-	AccessToken  string `thrift:"access_token,3" frugal:"3,default,string" json:"access_token"`
-	RefreshToken string `thrift:"refresh_token,4" frugal:"4,default,string" json:"refresh_token"`
+	UserId string `thrift:"user_id,1,required" frugal:"1,required,string" json:"user_id"`
 }
 
 func NewUserInfoRequest() *UserInfoRequest {
@@ -956,42 +953,19 @@ func (p *UserInfoRequest) InitDefault() {
 func (p *UserInfoRequest) GetUserId() (v string) {
 	return p.UserId
 }
-
-func (p *UserInfoRequest) GetToken() (v string) {
-	return p.Token
-}
-
-func (p *UserInfoRequest) GetAccessToken() (v string) {
-	return p.AccessToken
-}
-
-func (p *UserInfoRequest) GetRefreshToken() (v string) {
-	return p.RefreshToken
-}
 func (p *UserInfoRequest) SetUserId(val string) {
 	p.UserId = val
-}
-func (p *UserInfoRequest) SetToken(val string) {
-	p.Token = val
-}
-func (p *UserInfoRequest) SetAccessToken(val string) {
-	p.AccessToken = val
-}
-func (p *UserInfoRequest) SetRefreshToken(val string) {
-	p.RefreshToken = val
 }
 
 var fieldIDToName_UserInfoRequest = map[int16]string{
 	1: "user_id",
-	2: "token",
-	3: "access_token",
-	4: "refresh_token",
 }
 
 func (p *UserInfoRequest) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetUserId bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -1012,30 +986,7 @@ func (p *UserInfoRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 2:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField2(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 3:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField3(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 4:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField4(iprot); err != nil {
-					goto ReadFieldError
-				}
+				issetUserId = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1052,6 +1003,10 @@ func (p *UserInfoRequest) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
+	if !issetUserId {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
 	return nil
 ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
@@ -1066,6 +1021,8 @@ ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_UserInfoRequest[fieldId]))
 }
 
 func (p *UserInfoRequest) ReadField1(iprot thrift.TProtocol) error {
@@ -1074,33 +1031,6 @@ func (p *UserInfoRequest) ReadField1(iprot thrift.TProtocol) error {
 		return err
 	} else {
 		p.UserId = v
-	}
-	return nil
-}
-func (p *UserInfoRequest) ReadField2(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.Token = v
-	}
-	return nil
-}
-func (p *UserInfoRequest) ReadField3(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.AccessToken = v
-	}
-	return nil
-}
-func (p *UserInfoRequest) ReadField4(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.RefreshToken = v
 	}
 	return nil
 }
@@ -1113,18 +1043,6 @@ func (p *UserInfoRequest) Write(oprot thrift.TProtocol) (err error) {
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
-			goto WriteFieldError
-		}
-		if err = p.writeField2(oprot); err != nil {
-			fieldId = 2
-			goto WriteFieldError
-		}
-		if err = p.writeField3(oprot); err != nil {
-			fieldId = 3
-			goto WriteFieldError
-		}
-		if err = p.writeField4(oprot); err != nil {
-			fieldId = 4
 			goto WriteFieldError
 		}
 	}
@@ -1162,57 +1080,6 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *UserInfoRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("token", thrift.STRING, 2); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.Token); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
-}
-
-func (p *UserInfoRequest) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("access_token", thrift.STRING, 3); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.AccessToken); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
-}
-
-func (p *UserInfoRequest) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("refresh_token", thrift.STRING, 4); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.RefreshToken); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
-}
-
 func (p *UserInfoRequest) String() string {
 	if p == nil {
 		return "<nil>"
@@ -1230,42 +1097,12 @@ func (p *UserInfoRequest) DeepEqual(ano *UserInfoRequest) bool {
 	if !p.Field1DeepEqual(ano.UserId) {
 		return false
 	}
-	if !p.Field2DeepEqual(ano.Token) {
-		return false
-	}
-	if !p.Field3DeepEqual(ano.AccessToken) {
-		return false
-	}
-	if !p.Field4DeepEqual(ano.RefreshToken) {
-		return false
-	}
 	return true
 }
 
 func (p *UserInfoRequest) Field1DeepEqual(src string) bool {
 
 	if strings.Compare(p.UserId, src) != 0 {
-		return false
-	}
-	return true
-}
-func (p *UserInfoRequest) Field2DeepEqual(src string) bool {
-
-	if strings.Compare(p.Token, src) != 0 {
-		return false
-	}
-	return true
-}
-func (p *UserInfoRequest) Field3DeepEqual(src string) bool {
-
-	if strings.Compare(p.AccessToken, src) != 0 {
-		return false
-	}
-	return true
-}
-func (p *UserInfoRequest) Field4DeepEqual(src string) bool {
-
-	if strings.Compare(p.RefreshToken, src) != 0 {
 		return false
 	}
 	return true
@@ -1505,9 +1342,9 @@ func (p *UserInfoResponse) Field2DeepEqual(src *base.User) bool {
 }
 
 type UserAvatarUploadRequest struct {
-	AccessToken  string `thrift:"access_token,1" frugal:"1,default,string" json:"access_token"`
-	RefreshToken string `thrift:"refresh_token,2" frugal:"2,default,string" json:"refresh_token"`
-	Data         []byte `thrift:"data,3" frugal:"3,default,binary" json:"data"`
+	UserId   string `thrift:"user_id,1,required" frugal:"1,required,string" json:"user_id"`
+	Data     []byte `thrift:"data,2,required" frugal:"2,required,binary" json:"data"`
+	Filesize int64  `thrift:"filesize,3,required" frugal:"3,required,i64" json:"filesize"`
 }
 
 func NewUserAvatarUploadRequest() *UserAvatarUploadRequest {
@@ -1518,37 +1355,40 @@ func (p *UserAvatarUploadRequest) InitDefault() {
 	*p = UserAvatarUploadRequest{}
 }
 
-func (p *UserAvatarUploadRequest) GetAccessToken() (v string) {
-	return p.AccessToken
-}
-
-func (p *UserAvatarUploadRequest) GetRefreshToken() (v string) {
-	return p.RefreshToken
+func (p *UserAvatarUploadRequest) GetUserId() (v string) {
+	return p.UserId
 }
 
 func (p *UserAvatarUploadRequest) GetData() (v []byte) {
 	return p.Data
 }
-func (p *UserAvatarUploadRequest) SetAccessToken(val string) {
-	p.AccessToken = val
+
+func (p *UserAvatarUploadRequest) GetFilesize() (v int64) {
+	return p.Filesize
 }
-func (p *UserAvatarUploadRequest) SetRefreshToken(val string) {
-	p.RefreshToken = val
+func (p *UserAvatarUploadRequest) SetUserId(val string) {
+	p.UserId = val
 }
 func (p *UserAvatarUploadRequest) SetData(val []byte) {
 	p.Data = val
 }
+func (p *UserAvatarUploadRequest) SetFilesize(val int64) {
+	p.Filesize = val
+}
 
 var fieldIDToName_UserAvatarUploadRequest = map[int16]string{
-	1: "access_token",
-	2: "refresh_token",
-	3: "data",
+	1: "user_id",
+	2: "data",
+	3: "filesize",
 }
 
 func (p *UserAvatarUploadRequest) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetUserId bool = false
+	var issetData bool = false
+	var issetFilesize bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -1569,6 +1409,7 @@ func (p *UserAvatarUploadRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetUserId = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1577,14 +1418,16 @@ func (p *UserAvatarUploadRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetData = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		case 3:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetFilesize = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1601,6 +1444,20 @@ func (p *UserAvatarUploadRequest) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
+	if !issetUserId {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetData {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetFilesize {
+		fieldId = 3
+		goto RequiredFieldNotSetError
+	}
 	return nil
 ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
@@ -1615,6 +1472,8 @@ ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_UserAvatarUploadRequest[fieldId]))
 }
 
 func (p *UserAvatarUploadRequest) ReadField1(iprot thrift.TProtocol) error {
@@ -1622,25 +1481,25 @@ func (p *UserAvatarUploadRequest) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.AccessToken = v
+		p.UserId = v
 	}
 	return nil
 }
 func (p *UserAvatarUploadRequest) ReadField2(iprot thrift.TProtocol) error {
 
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadBinary(); err != nil {
 		return err
 	} else {
-		p.RefreshToken = v
+		p.Data = []byte(v)
 	}
 	return nil
 }
 func (p *UserAvatarUploadRequest) ReadField3(iprot thrift.TProtocol) error {
 
-	if v, err := iprot.ReadBinary(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.Data = []byte(v)
+		p.Filesize = v
 	}
 	return nil
 }
@@ -1682,10 +1541,10 @@ WriteStructEndError:
 }
 
 func (p *UserAvatarUploadRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("access_token", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("user_id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.AccessToken); err != nil {
+	if err := oprot.WriteString(p.UserId); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1699,10 +1558,10 @@ WriteFieldEndError:
 }
 
 func (p *UserAvatarUploadRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("refresh_token", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("data", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.RefreshToken); err != nil {
+	if err := oprot.WriteBinary([]byte(p.Data)); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1716,10 +1575,10 @@ WriteFieldEndError:
 }
 
 func (p *UserAvatarUploadRequest) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("data", thrift.STRING, 3); err != nil {
+	if err = oprot.WriteFieldBegin("filesize", thrift.I64, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteBinary([]byte(p.Data)); err != nil {
+	if err := oprot.WriteI64(p.Filesize); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1746,13 +1605,13 @@ func (p *UserAvatarUploadRequest) DeepEqual(ano *UserAvatarUploadRequest) bool {
 	} else if p == nil || ano == nil {
 		return false
 	}
-	if !p.Field1DeepEqual(ano.AccessToken) {
+	if !p.Field1DeepEqual(ano.UserId) {
 		return false
 	}
-	if !p.Field2DeepEqual(ano.RefreshToken) {
+	if !p.Field2DeepEqual(ano.Data) {
 		return false
 	}
-	if !p.Field3DeepEqual(ano.Data) {
+	if !p.Field3DeepEqual(ano.Filesize) {
 		return false
 	}
 	return true
@@ -1760,21 +1619,21 @@ func (p *UserAvatarUploadRequest) DeepEqual(ano *UserAvatarUploadRequest) bool {
 
 func (p *UserAvatarUploadRequest) Field1DeepEqual(src string) bool {
 
-	if strings.Compare(p.AccessToken, src) != 0 {
+	if strings.Compare(p.UserId, src) != 0 {
 		return false
 	}
 	return true
 }
-func (p *UserAvatarUploadRequest) Field2DeepEqual(src string) bool {
-
-	if strings.Compare(p.RefreshToken, src) != 0 {
-		return false
-	}
-	return true
-}
-func (p *UserAvatarUploadRequest) Field3DeepEqual(src []byte) bool {
+func (p *UserAvatarUploadRequest) Field2DeepEqual(src []byte) bool {
 
 	if bytes.Compare(p.Data, src) != 0 {
+		return false
+	}
+	return true
+}
+func (p *UserAvatarUploadRequest) Field3DeepEqual(src int64) bool {
+
+	if p.Filesize != src {
 		return false
 	}
 	return true
@@ -2014,8 +1873,7 @@ func (p *UserAvatarUploadResponse) Field2DeepEqual(src *base.User) bool {
 }
 
 type AuthMfaQrcodeRequest struct {
-	AccessToken  string `thrift:"access_token,1" frugal:"1,default,string" json:"access_token"`
-	RefreshToken string `thrift:"refresh_token,2" frugal:"2,default,string" json:"refresh_token"`
+	UserId string `thrift:"user_id,1" frugal:"1,default,string" json:"user_id"`
 }
 
 func NewAuthMfaQrcodeRequest() *AuthMfaQrcodeRequest {
@@ -2026,23 +1884,15 @@ func (p *AuthMfaQrcodeRequest) InitDefault() {
 	*p = AuthMfaQrcodeRequest{}
 }
 
-func (p *AuthMfaQrcodeRequest) GetAccessToken() (v string) {
-	return p.AccessToken
+func (p *AuthMfaQrcodeRequest) GetUserId() (v string) {
+	return p.UserId
 }
-
-func (p *AuthMfaQrcodeRequest) GetRefreshToken() (v string) {
-	return p.RefreshToken
-}
-func (p *AuthMfaQrcodeRequest) SetAccessToken(val string) {
-	p.AccessToken = val
-}
-func (p *AuthMfaQrcodeRequest) SetRefreshToken(val string) {
-	p.RefreshToken = val
+func (p *AuthMfaQrcodeRequest) SetUserId(val string) {
+	p.UserId = val
 }
 
 var fieldIDToName_AuthMfaQrcodeRequest = map[int16]string{
-	1: "access_token",
-	2: "refresh_token",
+	1: "user_id",
 }
 
 func (p *AuthMfaQrcodeRequest) Read(iprot thrift.TProtocol) (err error) {
@@ -2067,14 +1917,6 @@ func (p *AuthMfaQrcodeRequest) Read(iprot thrift.TProtocol) (err error) {
 		case 1:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 2:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -2114,16 +1956,7 @@ func (p *AuthMfaQrcodeRequest) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.AccessToken = v
-	}
-	return nil
-}
-func (p *AuthMfaQrcodeRequest) ReadField2(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.RefreshToken = v
+		p.UserId = v
 	}
 	return nil
 }
@@ -2136,10 +1969,6 @@ func (p *AuthMfaQrcodeRequest) Write(oprot thrift.TProtocol) (err error) {
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
-			goto WriteFieldError
-		}
-		if err = p.writeField2(oprot); err != nil {
-			fieldId = 2
 			goto WriteFieldError
 		}
 	}
@@ -2161,10 +1990,10 @@ WriteStructEndError:
 }
 
 func (p *AuthMfaQrcodeRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("access_token", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("user_id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.AccessToken); err != nil {
+	if err := oprot.WriteString(p.UserId); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2175,23 +2004,6 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
-}
-
-func (p *AuthMfaQrcodeRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("refresh_token", thrift.STRING, 2); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.RefreshToken); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 
 func (p *AuthMfaQrcodeRequest) String() string {
@@ -2208,10 +2020,7 @@ func (p *AuthMfaQrcodeRequest) DeepEqual(ano *AuthMfaQrcodeRequest) bool {
 	} else if p == nil || ano == nil {
 		return false
 	}
-	if !p.Field1DeepEqual(ano.AccessToken) {
-		return false
-	}
-	if !p.Field2DeepEqual(ano.RefreshToken) {
+	if !p.Field1DeepEqual(ano.UserId) {
 		return false
 	}
 	return true
@@ -2219,14 +2028,7 @@ func (p *AuthMfaQrcodeRequest) DeepEqual(ano *AuthMfaQrcodeRequest) bool {
 
 func (p *AuthMfaQrcodeRequest) Field1DeepEqual(src string) bool {
 
-	if strings.Compare(p.AccessToken, src) != 0 {
-		return false
-	}
-	return true
-}
-func (p *AuthMfaQrcodeRequest) Field2DeepEqual(src string) bool {
-
-	if strings.Compare(p.RefreshToken, src) != 0 {
+	if strings.Compare(p.UserId, src) != 0 {
 		return false
 	}
 	return true
@@ -2685,10 +2487,9 @@ func (p *AuthMfaQrcodeResponse) Field2DeepEqual(src *Qrcode) bool {
 }
 
 type AuthMfaBindRequest struct {
-	AccessToken  string `thrift:"access_token,1" frugal:"1,default,string" json:"access_token"`
-	RefreshToken string `thrift:"refresh_token,2" frugal:"2,default,string" json:"refresh_token"`
-	Code         string `thrift:"code,3" frugal:"3,default,string" json:"code"`
-	Secret       string `thrift:"secret,4" frugal:"4,default,string" json:"secret"`
+	UserId string `thrift:"user_id,1,required" frugal:"1,required,string" json:"user_id"`
+	Code   string `thrift:"code,2,required" frugal:"2,required,string" json:"code"`
+	Secret string `thrift:"secret,3,required" frugal:"3,required,string" json:"secret"`
 }
 
 func NewAuthMfaBindRequest() *AuthMfaBindRequest {
@@ -2699,12 +2500,8 @@ func (p *AuthMfaBindRequest) InitDefault() {
 	*p = AuthMfaBindRequest{}
 }
 
-func (p *AuthMfaBindRequest) GetAccessToken() (v string) {
-	return p.AccessToken
-}
-
-func (p *AuthMfaBindRequest) GetRefreshToken() (v string) {
-	return p.RefreshToken
+func (p *AuthMfaBindRequest) GetUserId() (v string) {
+	return p.UserId
 }
 
 func (p *AuthMfaBindRequest) GetCode() (v string) {
@@ -2714,11 +2511,8 @@ func (p *AuthMfaBindRequest) GetCode() (v string) {
 func (p *AuthMfaBindRequest) GetSecret() (v string) {
 	return p.Secret
 }
-func (p *AuthMfaBindRequest) SetAccessToken(val string) {
-	p.AccessToken = val
-}
-func (p *AuthMfaBindRequest) SetRefreshToken(val string) {
-	p.RefreshToken = val
+func (p *AuthMfaBindRequest) SetUserId(val string) {
+	p.UserId = val
 }
 func (p *AuthMfaBindRequest) SetCode(val string) {
 	p.Code = val
@@ -2728,16 +2522,18 @@ func (p *AuthMfaBindRequest) SetSecret(val string) {
 }
 
 var fieldIDToName_AuthMfaBindRequest = map[int16]string{
-	1: "access_token",
-	2: "refresh_token",
-	3: "code",
-	4: "secret",
+	1: "user_id",
+	2: "code",
+	3: "secret",
 }
 
 func (p *AuthMfaBindRequest) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetUserId bool = false
+	var issetCode bool = false
+	var issetSecret bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -2758,6 +2554,7 @@ func (p *AuthMfaBindRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetUserId = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2766,6 +2563,7 @@ func (p *AuthMfaBindRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetCode = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2774,14 +2572,7 @@ func (p *AuthMfaBindRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 4:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField4(iprot); err != nil {
-					goto ReadFieldError
-				}
+				issetSecret = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2798,6 +2589,20 @@ func (p *AuthMfaBindRequest) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
+	if !issetUserId {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCode {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetSecret {
+		fieldId = 3
+		goto RequiredFieldNotSetError
+	}
 	return nil
 ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
@@ -2812,6 +2617,8 @@ ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_AuthMfaBindRequest[fieldId]))
 }
 
 func (p *AuthMfaBindRequest) ReadField1(iprot thrift.TProtocol) error {
@@ -2819,7 +2626,7 @@ func (p *AuthMfaBindRequest) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.AccessToken = v
+		p.UserId = v
 	}
 	return nil
 }
@@ -2828,20 +2635,11 @@ func (p *AuthMfaBindRequest) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.RefreshToken = v
-	}
-	return nil
-}
-func (p *AuthMfaBindRequest) ReadField3(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
 		p.Code = v
 	}
 	return nil
 }
-func (p *AuthMfaBindRequest) ReadField4(iprot thrift.TProtocol) error {
+func (p *AuthMfaBindRequest) ReadField3(iprot thrift.TProtocol) error {
 
 	if v, err := iprot.ReadString(); err != nil {
 		return err
@@ -2869,10 +2667,6 @@ func (p *AuthMfaBindRequest) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 3
 			goto WriteFieldError
 		}
-		if err = p.writeField4(oprot); err != nil {
-			fieldId = 4
-			goto WriteFieldError
-		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -2892,10 +2686,10 @@ WriteStructEndError:
 }
 
 func (p *AuthMfaBindRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("access_token", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("user_id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.AccessToken); err != nil {
+	if err := oprot.WriteString(p.UserId); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2909,10 +2703,10 @@ WriteFieldEndError:
 }
 
 func (p *AuthMfaBindRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("refresh_token", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("code", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.RefreshToken); err != nil {
+	if err := oprot.WriteString(p.Code); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2926,24 +2720,7 @@ WriteFieldEndError:
 }
 
 func (p *AuthMfaBindRequest) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("code", thrift.STRING, 3); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.Code); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
-}
-
-func (p *AuthMfaBindRequest) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("secret", thrift.STRING, 4); err != nil {
+	if err = oprot.WriteFieldBegin("secret", thrift.STRING, 3); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Secret); err != nil {
@@ -2954,9 +2731,9 @@ func (p *AuthMfaBindRequest) writeField4(oprot thrift.TProtocol) (err error) {
 	}
 	return nil
 WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
 }
 
 func (p *AuthMfaBindRequest) String() string {
@@ -2973,16 +2750,13 @@ func (p *AuthMfaBindRequest) DeepEqual(ano *AuthMfaBindRequest) bool {
 	} else if p == nil || ano == nil {
 		return false
 	}
-	if !p.Field1DeepEqual(ano.AccessToken) {
+	if !p.Field1DeepEqual(ano.UserId) {
 		return false
 	}
-	if !p.Field2DeepEqual(ano.RefreshToken) {
+	if !p.Field2DeepEqual(ano.Code) {
 		return false
 	}
-	if !p.Field3DeepEqual(ano.Code) {
-		return false
-	}
-	if !p.Field4DeepEqual(ano.Secret) {
+	if !p.Field3DeepEqual(ano.Secret) {
 		return false
 	}
 	return true
@@ -2990,26 +2764,19 @@ func (p *AuthMfaBindRequest) DeepEqual(ano *AuthMfaBindRequest) bool {
 
 func (p *AuthMfaBindRequest) Field1DeepEqual(src string) bool {
 
-	if strings.Compare(p.AccessToken, src) != 0 {
+	if strings.Compare(p.UserId, src) != 0 {
 		return false
 	}
 	return true
 }
 func (p *AuthMfaBindRequest) Field2DeepEqual(src string) bool {
 
-	if strings.Compare(p.RefreshToken, src) != 0 {
-		return false
-	}
-	return true
-}
-func (p *AuthMfaBindRequest) Field3DeepEqual(src string) bool {
-
 	if strings.Compare(p.Code, src) != 0 {
 		return false
 	}
 	return true
 }
-func (p *AuthMfaBindRequest) Field4DeepEqual(src string) bool {
+func (p *AuthMfaBindRequest) Field3DeepEqual(src string) bool {
 
 	if strings.Compare(p.Secret, src) != 0 {
 		return false

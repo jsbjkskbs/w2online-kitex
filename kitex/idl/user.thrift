@@ -9,8 +9,6 @@ struct UserRegisterRequest {
 
 struct UserRegisterResponse {
     1: base.Status base;
-    //2: string access_token;
-    //3: string refresh_token;
 }
 
 struct UserLoginRequest {
@@ -22,15 +20,10 @@ struct UserLoginRequest {
 struct UserLoginResponse {
     1: base.Status base;
     2: base.User data;
-    //3: string access_token;
-    //4: string refresh_token;
 }
 
 struct UserInfoRequest {
-    1: string user_id (api.query="user_id");
-    2: string token (api.query="token");
-    3: string access_token (api.header="Access-Token");
-    4: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
 }
 
 struct UserInfoResponse {
@@ -39,9 +32,9 @@ struct UserInfoResponse {
 }
 
 struct UserAvatarUploadRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: binary data;
+    1: required string user_id;
+    2: required binary data;
+    3: required i64 filesize;
 }
 
 struct UserAvatarUploadResponse {
@@ -50,8 +43,7 @@ struct UserAvatarUploadResponse {
 }
 
 struct AuthMfaQrcodeRequest { 
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
+    1: string user_id;
 }
 
 struct Qrcode {
@@ -64,10 +56,9 @@ struct AuthMfaQrcodeResponse {
 }
 
 struct AuthMfaBindRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: string code;
-    4: string secret;
+    1: required string user_id;
+    2: required string code;
+    3: required string secret;
 }
 
 struct AuthMfaBindResponse {

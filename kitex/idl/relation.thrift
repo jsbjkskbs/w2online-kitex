@@ -3,8 +3,7 @@ namespace go relation
 include "base.thrift"
 
 struct RelationActionRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
+    1: required string from_user_id;
     3: required string to_user_id;
     4: required i64 action_type;
 }
@@ -14,11 +13,9 @@ struct RelationActionResponse {
 }
 
 struct FollowingListRequest {
-    1: string user_id (api.query="user_id");
-    2: i64 page_num (api.query="page_num");
-    3: i64 page_size (api.query="page_size");
-    4: string access_token (api.header="Access-Token");
-    5: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
+    2: i64 page_num;
+    3: i64 page_size;
 }
 
 struct FollowingListResponseData {
@@ -31,11 +28,9 @@ struct FollowingListResponse {
 }
 
 struct FollowerListRequest {
-    1: string user_id (api.query="user_id");
-    2: i64 page_num (api.query="page_num");
-    3: i64 page_size (api.query="page_size");
-    4: string access_token (api.header="Access-Token");
-    5: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
+    2: i64 page_num;
+    3: i64 page_size;
 }
 
 struct FollowerListResponseData {
@@ -48,10 +43,9 @@ struct FollowerListResponse {
 }
 
 struct FriendListRequest {
-    1: i64 page_num (api.query="page_num");
-    2: i64 page_size (api.query="page_size");
-    3: string access_token (api.header="Access-Token");
-    4: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
+    2: i64 page_num;
+    3: i64 page_size;
 }
 
 struct FriendListResponseData {

@@ -3,9 +3,9 @@ namespace go message
 include "base.thrift"
 
 struct MessageInfo {
-    1: string from_uid;
-    2: string to_uid;
-    3: string content;
+    1: required string from_uid;
+    2: required string to_uid;
+    3: required string content;
 }
 
 struct InsertMessageRequest {
@@ -17,7 +17,7 @@ struct InsertMessageResponse {
 }
 
 struct PopMessageRequest {
-    1: string uid;
+    1: required string uid;
 }
 
 struct PopMessageResponseData {

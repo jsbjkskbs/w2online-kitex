@@ -3,7 +3,7 @@ namespace go video
 include "base.thrift"
 
 struct VideoFeedRequest {
-    1: string latest_time (api.query="latest_time");
+    1: string latest_time;
 }
 
 struct VideoFeedResponseData {
@@ -15,11 +15,10 @@ struct VideoFeedResponse {
 }
 
 struct VideoPublishStartRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: string title (vt.max_size = "1");
-    4: string description;
-    5: i64 chunk_total_number (vt.gt = "0");
+    1: required string user_id;
+    3: required string title (vt.min_size = "1");
+    4: required string description;
+    5: required i64 chunk_total_number (vt.gt = "0");
 }
 
 struct VideoPublishStartResponse {
@@ -28,14 +27,13 @@ struct VideoPublishStartResponse {
 }
 
 struct VideoPublishUploadingRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: required string uuid;
-    4: binary data;
-    5: required string md5;
-    6: required bool is_m3u8;
-    7: required string filename;
-    8: required i64 chunk_number;
+    1: required string user_id;
+    2: required string uuid;
+    3: required binary data;
+    4: required string md5;
+    5: required bool is_m3u8;
+    6: required string filename;
+    7: required i64 chunk_number;
 }
 
 struct VideoPublishUploadingResponse {
@@ -43,9 +41,8 @@ struct VideoPublishUploadingResponse {
 }
 
 struct VideoPublishCompleteRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: required string uuid;
+    1: required string user_id;
+    2: required string uuid;
 }
 
 struct VideoPublishCompleteResponse {
@@ -53,9 +50,8 @@ struct VideoPublishCompleteResponse {
 }
 
 struct VideoPublishCancleRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: required string uuid;
+    1: required string user_id;
+    2: required string uuid;
 }
 
 struct VideoPublishCancleResponse {
@@ -63,11 +59,9 @@ struct VideoPublishCancleResponse {
 }
 
 struct VideoListRequest {
-    1: string user_id (api.query="user_id");
-    2: i64 page_num (api.query="page_num");
-    3: i64 page_size (api.query="page_size");
-    4: string access_token (api.header="Access-Token");
-    5: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
+    2: i64 page_num;
+    3: i64 page_size;
 }
 
 struct VideoListResponseData {
@@ -80,10 +74,8 @@ struct VideoListResponse {
 }
 
 struct VideoPopularRequest {
-    1: i64 page_num (api.query="page_num");
-    2: i64 page_size (api.query="page_size");
-    3: string access_token (api.header="Access-Token");
-    4: string refresh_token (api.header="Refresh-Token");
+    1: i64 page_num;
+    2: i64 page_size;
 }
 
 struct VideoPopularResponseData {
@@ -95,8 +87,6 @@ struct VideoPopularResponse {
 }
 
 struct VideoSearchRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
     3: string keywords;
     4: required i64 page_num;
     5: required i64 page_size;
@@ -115,6 +105,7 @@ struct VideoSearchResponse {
 }
 
 struct VideoVisitRequest {
+    1: required string from_ip
 }
 
 struct VideoVisitResponse {

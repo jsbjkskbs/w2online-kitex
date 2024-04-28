@@ -9,6 +9,7 @@ import (
 	"work/pkg/errmsg"
 	"work/pkg/utils"
 	"work/rpc/facade/infras/client"
+	facade_user "work/rpc/facade/model/base/user"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -40,11 +41,14 @@ func AccessTokenJwtInit() {
 		WithoutDefaultTokenHeadName: true,
 
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) {
-			var loginRequest user.UserLoginRequest
+			var loginRequest facade_user.UserLoginRequest
 			if err := c.BindAndValidate(&loginRequest); err != nil {
 				return nil, err
 			}
-			user, err := client.UserLogin(context.Background(), &loginRequest)
+			user, err := client.UserLogin(context.Background(), &user.UserLoginRequest{
+				Username: loginRequest.Username,
+				Password: loginRequest.Password,
+			})
 			if err != nil {
 				return nil, err
 			}

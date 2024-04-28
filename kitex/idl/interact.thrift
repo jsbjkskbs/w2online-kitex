@@ -3,11 +3,10 @@ namespace go interact
 include "base.thrift"
 
 struct LikeActionRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
     3: string video_id;
     4: string comment_id;
-    5: string action_type;
+    5: required string action_type;
 }
 
 struct LikeActionResponse {
@@ -15,11 +14,9 @@ struct LikeActionResponse {
 }
 
 struct LikeListRequest {
-    1: string user_id (api.query="user_id");
-    2: i64 page_size (api.query="page_size");
-    3: i64 page_num (api.query="page_num");
-    4: string access_token (api.header="Access-Token");
-    5: string refresh_token (api.header="Refresh-Token");
+    1: required string user_id;
+    2: i64 page_size;
+    3: i64 page_num;
 }
 
 
@@ -32,11 +29,10 @@ struct LikeListResponse {
 }
 
 struct CommentPublishRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: string video_id;
-    4: string comment_id;
-    5: required string content;
+    1: required string user_id;
+    2: string video_id;
+    3: string comment_id;
+    4: required string content;
 }
 
 struct CommentPublishResponse {
@@ -44,12 +40,10 @@ struct CommentPublishResponse {
 }
 
 struct CommentListRequest {
-    1: string video_id (api.query="video_id");
-    2: string comment_id (api.query="comment_id");
-    3: i64 page_size (api.query="page_size");
-    4: i64 page_num (api.query="page_num");
-    5: string access_token (api.header="Access-Token");
-    6: string refresh_token (api.header="Refresh-Token");
+    1: string video_id;
+    2: string comment_id;
+    3: i64 page_size;
+    4: i64 page_num;
 }
 
 struct CommentListResponseData {
@@ -61,10 +55,8 @@ struct CommentListResponse {
 }
 
 struct CommentDeleteRequest {
-    1: string access_token (api.header="Access-Token");
-    2: string refresh_token (api.header="Refresh-Token");
-    3: string video_id;
-    4: string comment_id;
+    1: string video_id;
+    2: string comment_id;
 }
 
 struct CommentDeleteResponse {
