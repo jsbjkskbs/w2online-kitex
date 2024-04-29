@@ -6,6 +6,8 @@ import (
 	"work/pkg/errmsg"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
+	"work/rpc/facade/model/base"
+	facade_relation "work/rpc/facade/model/base/relation"
 	"work/rpc/facade/mw/jwt"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -13,21 +15,30 @@ import (
 
 func RelationAction(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req relation.RelationActionRequest
-	if err := c.BindAndValidate(&req); err != nil {
+	var facadeReq facade_relation.RelationActionRequest
+	if err := c.BindAndValidate(&facadeReq); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
 
+	var req relation.RelationActionRequest
 	if req.FromUserId, err = jwt.CovertJWTPayloadToString(ctx, c); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
+	req.ActionType = facadeReq.ActionType
+	req.ToUserId = facadeReq.ToUserId
 
 	err = client.RelationAction(ctx, &req)
 	if err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		return
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, nil)
+	handlers.SendFormedResponse(c, &facade_relation.RelationActionResponse{
+		Base: &base.Status{
+			Code: errmsg.NoError.ErrorCode,
+			Msg:  errmsg.NoError.ErrorMsg,
+		},
+	})
 }

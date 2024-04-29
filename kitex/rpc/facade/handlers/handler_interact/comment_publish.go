@@ -6,6 +6,8 @@ import (
 	"work/pkg/errmsg"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
+	"work/rpc/facade/model/base"
+	facade_interact "work/rpc/facade/model/base/interact"
 	"work/rpc/facade/mw/jwt"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -13,21 +15,31 @@ import (
 
 func CommentPublish(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req interact.CommentPublishRequest
-	if err := c.BindAndValidate(&req); err != nil {
+	var facadeReq facade_interact.CommentPublishRequest
+	if err := c.BindAndValidate(&facadeReq); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
 
+	var req interact.CommentPublishRequest
 	if req.UserId, err = jwt.CovertJWTPayloadToString(ctx, c); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
+	req.VideoId = facadeReq.VideoId
+	req.CommentId = facadeReq.CommentId
+	req.Content = facadeReq.Content
 
 	err = client.CommentPublish(ctx, &req)
 	if err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		return
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, nil)
+	handlers.SendFormedResponse(c, &facade_interact.CommentPublishResponse{
+		Base: &base.Status{
+			Code: errmsg.NoError.ErrorCode,
+			Msg:  errmsg.NoError.ErrorMsg,
+		},
+	})
 }

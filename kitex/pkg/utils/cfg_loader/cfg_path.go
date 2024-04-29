@@ -1,3 +1,0 @@
-package cfgloader
-
-const configPath = `.`

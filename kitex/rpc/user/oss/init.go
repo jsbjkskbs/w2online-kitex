@@ -1,7 +1,6 @@
 package oss
 
 import (
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
@@ -28,6 +27,4 @@ func Load() {
 	}
 	formUploader = storage.NewFormUploader(&cfg)
 	bucketManager = storage.NewBucketManager(mac, &cfg)
-
-	hlog.Info("Oss service prepared successfully")
 }

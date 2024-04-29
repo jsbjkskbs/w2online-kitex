@@ -13,9 +13,7 @@ import (
 )
 
 func Init() {
-	if err := conf_loader.Run(); err != nil {
-		panic(err)
-	}
+	conf_loader.Init()
 }
 
 func main() {

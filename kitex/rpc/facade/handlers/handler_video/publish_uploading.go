@@ -6,6 +6,8 @@ import (
 	"work/pkg/errmsg"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
+	"work/rpc/facade/model/base"
+	facade_video "work/rpc/facade/model/base/video"
 	"work/rpc/facade/mw/jwt"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -13,21 +15,34 @@ import (
 
 func VideoPublishUploading(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req video.VideoPublishUploadingRequest
-	if err := c.BindAndValidate(&req); err != nil {
+	var facadeReq facade_video.VideoPublishUploadingRequest
+	if err := c.BindAndValidate(&facadeReq); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
 
+	var req video.VideoPublishUploadingRequest
 	if req.UserId, err = jwt.CovertJWTPayloadToString(ctx, c); err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
 		return
 	}
+	req.ChunkNumber = facadeReq.ChunkNumber
+	req.Data = facadeReq.Data
+	req.Filename = facadeReq.Filename
+	req.IsM3u8 = facadeReq.IsM3U8
+	req.Md5 = facadeReq.Md5
+	req.Uuid = facadeReq.Uuid
 
 	err = client.VideoPublishUploading(ctx, &req)
 	if err != nil {
 		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		return
 	}
 
-	handlers.SendResponse(c, errmsg.NoError, nil)
+	handlers.SendFormedResponse(c, &facade_video.VideoPublishUploadingResponse{
+		Base: &base.Status{
+			Code: errmsg.NoError.ErrorCode,
+			Msg:  errmsg.NoError.ErrorMsg,
+		},
+	})
 }
