@@ -1,0 +1,5 @@
+package elasticsearch
+
+var (
+	ElasticAddr = ``
+)

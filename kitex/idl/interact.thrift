@@ -47,7 +47,7 @@ struct CommentListRequest {
 }
 
 struct CommentListResponseData {
-    required list<base.Comment> items;
+    1: required list<base.Comment> items;
 }
 struct CommentListResponse {
     1: base.Status base;
@@ -57,6 +57,7 @@ struct CommentListResponse {
 struct CommentDeleteRequest {
     1: string video_id;
     2: string comment_id;
+    3: string from_user_id;
 }
 
 struct CommentDeleteResponse {

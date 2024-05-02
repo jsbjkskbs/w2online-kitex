@@ -106,11 +106,32 @@ struct VideoSearchResponse {
 
 struct VideoVisitRequest {
     1: required string from_ip
+    2: required string video_id
 }
 
 struct VideoVisitResponse {
     1: base.Status base;
     2: base.Video item;
+}
+
+struct VideoInfoRequest {
+    1: required string video_id;
+}
+
+struct VideoInfoResponseData {
+    1: base.Video item;
+}
+struct VideoInfoResponse {
+    1: base.Status base;
+    2: VideoInfoResponseData data;
+}
+
+struct VideoDeleteRequest {
+    1: required string video_id;
+}
+
+struct VideoDeleteResponse {
+    1: base.Status base;
 }
 
 service VideoService {
@@ -123,4 +144,6 @@ service VideoService {
     VideoPopularResponse Popular(1: VideoPopularRequest request);
     VideoSearchResponse Search(1: VideoSearchRequest request);
     VideoVisitResponse Visit(1: VideoVisitRequest request);
+    VideoInfoResponse Info(1: VideoInfoRequest request);
+    VideoDeleteResponse Delete(1: VideoDeleteRequest request);
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"work/kitex_gen/base"
 	user "work/kitex_gen/user"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/pkg/utils"
 	"work/rpc/user/service"
 )
@@ -25,20 +25,21 @@ func (s *UserServiceImpl) Register(ctx context.Context, request *user.UserRegist
 			Code: respErr.StatusCode,
 			Msg:  respErr.StatusMsg,
 		}
-		return
+		return resp, nil
 	}
 
 	resp.Base = &base.Status{
-		Code: errmsg.NoError.ErrorCode,
-		Msg:  errmsg.NoError.ErrorMsg,
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
 	}
-	return
+	return resp, nil
 }
 
 // Login implements the UserServiceImpl interface.
 func (s *UserServiceImpl) Login(ctx context.Context, request *user.UserLoginRequest) (resp *user.UserLoginResponse, err error) {
 	// TODO: Your code here...
 	resp = new(user.UserLoginResponse)
+	resp.Data = &base.User{}
 
 	data, err := service.NewUserService(ctx).NewLoginEvent(request)
 	if err != nil {
@@ -47,12 +48,12 @@ func (s *UserServiceImpl) Login(ctx context.Context, request *user.UserLoginRequ
 			Code: respErr.StatusCode,
 			Msg:  respErr.StatusMsg,
 		}
-		return
+		return resp, nil
 	}
 
 	resp.Base = &base.Status{
-		Code: errmsg.NoError.ErrorCode,
-		Msg:  errmsg.NoError.ErrorMsg,
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
 	}
 	resp.Data = &base.User{
 		Uid:       fmt.Sprint(data.Uid),
@@ -62,13 +63,14 @@ func (s *UserServiceImpl) Login(ctx context.Context, request *user.UserLoginRequ
 		DeletedAt: fmt.Sprint(data.DeletedAt),
 		UpdatedAt: fmt.Sprint(data.UpdatedAt),
 	}
-	return
+	return resp, nil
 }
 
 // Info implements the UserServiceImpl interface.
 func (s *UserServiceImpl) Info(ctx context.Context, request *user.UserInfoRequest) (resp *user.UserInfoResponse, err error) {
 	// TODO: Your code here...
 	resp = new(user.UserInfoResponse)
+	resp.Data = &base.User{}
 
 	data, err := service.NewUserService(ctx).NewInfoEvent(request)
 	if err != nil {
@@ -77,12 +79,12 @@ func (s *UserServiceImpl) Info(ctx context.Context, request *user.UserInfoReques
 			Code: respErr.StatusCode,
 			Msg:  respErr.StatusMsg,
 		}
-		return
+		return resp, nil
 	}
 
 	resp.Base = &base.Status{
-		Code: errmsg.NoError.ErrorCode,
-		Msg:  errmsg.NoError.ErrorMsg,
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
 	}
 	resp.Data = &base.User{
 		Uid:       fmt.Sprint(data.Uid),
@@ -92,13 +94,14 @@ func (s *UserServiceImpl) Info(ctx context.Context, request *user.UserInfoReques
 		DeletedAt: fmt.Sprint(data.DeletedAt),
 		UpdatedAt: fmt.Sprint(data.UpdatedAt),
 	}
-	return
+	return resp, nil
 }
 
 // AvatarUpload implements the UserServiceImpl interface.
 func (s *UserServiceImpl) AvatarUpload(ctx context.Context, request *user.UserAvatarUploadRequest) (resp *user.UserAvatarUploadResponse, err error) {
 	// TODO: Your code here...
 	resp = new(user.UserAvatarUploadResponse)
+	resp.Data = &base.User{}
 
 	data, err := service.NewUserService(ctx).NewAvatarUploadEvent(request)
 	if err != nil {
@@ -107,12 +110,12 @@ func (s *UserServiceImpl) AvatarUpload(ctx context.Context, request *user.UserAv
 			Code: respErr.StatusCode,
 			Msg:  respErr.StatusMsg,
 		}
-		return
+		return resp, nil
 	}
 
 	resp.Base = &base.Status{
-		Code: errmsg.NoError.ErrorCode,
-		Msg:  errmsg.NoError.ErrorMsg,
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
 	}
 	resp.Data = &base.User{
 		Uid:       fmt.Sprint(data.Uid),
@@ -122,13 +125,14 @@ func (s *UserServiceImpl) AvatarUpload(ctx context.Context, request *user.UserAv
 		DeletedAt: fmt.Sprint(data.DeletedAt),
 		UpdatedAt: fmt.Sprint(data.UpdatedAt),
 	}
-	return
+	return resp, nil
 }
 
 // AuthMfaQrcode implements the UserServiceImpl interface.
 func (s *UserServiceImpl) AuthMfaQrcode(ctx context.Context, request *user.AuthMfaQrcodeRequest) (resp *user.AuthMfaQrcodeResponse, err error) {
 	// TODO: Your code here...
 	resp = new(user.AuthMfaQrcodeResponse)
+	resp.Data = &user.Qrcode{}
 
 	data, err := service.NewUserService(ctx).NewQrcodeEvent(request)
 	if err != nil {
@@ -137,15 +141,15 @@ func (s *UserServiceImpl) AuthMfaQrcode(ctx context.Context, request *user.AuthM
 			Code: respErr.StatusCode,
 			Msg:  respErr.StatusMsg,
 		}
-		return
+		return resp, nil
 	}
 
 	resp.Base = &base.Status{
-		Code: errmsg.NoError.ErrorCode,
-		Msg:  errmsg.NoError.ErrorMsg,
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
 	}
 	resp.Data = data.Data
-	return
+	return resp, nil
 }
 
 // AuthMfaBind implements the UserServiceImpl interface.
@@ -160,12 +164,12 @@ func (s *UserServiceImpl) AuthMfaBind(ctx context.Context, request *user.AuthMfa
 			Code: respErr.StatusCode,
 			Msg:  respErr.StatusMsg,
 		}
-		return
+		return resp, nil
 	}
 
 	resp.Base = &base.Status{
-		Code: errmsg.NoError.ErrorCode,
-		Msg:  errmsg.NoError.ErrorMsg,
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
 	}
-	return
+	return resp, nil
 }

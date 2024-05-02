@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"time"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 )
 
 type User struct {
@@ -51,7 +51,7 @@ func GetUserByUid(uid string) (*User, error) {
 func GetUserByUidAndUsername(uid, username string) (*User, error) {
 	user := User{Uid: 0}
 	if err := DB.Where("uid = ? and username = ?", uid, username).Find(&user).Error; err != nil {
-		return nil, errmsg.UsernameAndUidAreNotMatchedError
+		return nil, err
 	} else {
 		return &user, nil
 	}
@@ -64,7 +64,7 @@ func GetUserByUsernameAndPwd(username, password string) (*User, error) {
 		return nil, err
 	}
 	if user.Uid == 0 {
-		return nil, errmsg.AuthenticatorError
+		return nil, errno.InfomationNotExist
 	}
 	return &user, nil
 }

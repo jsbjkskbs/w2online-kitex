@@ -3,7 +3,7 @@ package handler_relation
 import (
 	"context"
 	"work/kitex_gen/relation"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/handlers/handler_relation/convert"
 	"work/rpc/facade/infras/client"
@@ -16,7 +16,7 @@ import (
 func FollowingList(ctx context.Context, c *app.RequestContext) {
 	var facadeReq facade_relation.FollowingListRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
@@ -26,14 +26,14 @@ func FollowingList(ctx context.Context, c *app.RequestContext) {
 		PageSize: facadeReq.PageSize,
 	})
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_relation.FollowingListResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		Data: &facade_relation.FollowingListResponse_FollowingListResponseData{
 			Items: *convert.KitexGenToRespUserLite(&data.Items),

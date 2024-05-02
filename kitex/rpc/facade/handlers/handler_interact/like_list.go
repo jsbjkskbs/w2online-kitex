@@ -3,7 +3,7 @@ package handler_interact
 import (
 	"context"
 	"work/kitex_gen/interact"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/handlers/handler_video/convert"
 	"work/rpc/facade/infras/client"
@@ -16,7 +16,7 @@ import (
 func LikeList(ctx context.Context, c *app.RequestContext) {
 	var facadeReq facade_interact.LikeListRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
@@ -26,14 +26,14 @@ func LikeList(ctx context.Context, c *app.RequestContext) {
 		PageNum:  facadeReq.PageNum,
 	})
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_interact.LikeListResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		Data: &facade_interact.LikeListResponse_LikeListResponseData{
 			Items: *convert.KitexGenToRespVideo(&data.Items),

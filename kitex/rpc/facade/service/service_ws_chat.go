@@ -5,7 +5,7 @@ import (
 	"time"
 	"work/kitex_gen/message"
 	"work/kitex_gen/user"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/pkg/utils"
 	"work/rpc/facade/infras/client"
 	"work/rpc/facade/mw/jwt"
@@ -50,15 +50,15 @@ func (service ChatService) Login() error {
 	r := utils.NewRsaService()
 	if err := r.Build(rsaClientKey); err != nil {
 		hlog.Info(err)
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 	userMap[uid] = &_user{conn: service.conn, username: user.Username, rsa: r}
 	publicKey, err := r.GetPublicKeyPemFormat()
 	if err != nil {
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 	if err := service.conn.WriteMessage(websocket.TextMessage, []byte(publicKey)); err != nil {
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 
 	return nil
@@ -76,15 +76,15 @@ func (service ChatService) Logout() error {
 func (service ChatService) SendMessage(content []byte) error {
 	from, err := jwt.CovertJWTPayloadToString(service.ctx, service.c)
 	if err != nil {
-		return errmsg.AuthenticatorError
+		return errno.TokenInvailed
 	}
 	to := service.c.Query(`to_user_id`)
 	user, err := client.UserInfo(service.ctx, &user.UserInfoRequest{UserId: to})
 	if err != nil {
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 	if user == nil {
-		return errmsg.UserDoesNotExistError
+		return errno.InfomationNotExist
 	}
 	toConn := userMap[to]
 	fromConn := userMap[from]
@@ -93,7 +93,7 @@ func (service ChatService) SendMessage(content []byte) error {
 		{
 			plainText, err := fromConn.rsa.Decode(content)
 			if err != nil {
-				return errmsg.ServiceError
+				return errno.ServiceError
 			}
 			if err := client.InsertMessage(context.Background(), &message.InsertMessageRequest{
 				Message: &message.MessageInfo{
@@ -102,22 +102,22 @@ func (service ChatService) SendMessage(content []byte) error {
 					Content: string(plainText),
 				},
 			}); err != nil {
-				return errmsg.RedisError
+				return errno.RedisError
 			}
 		}
 	default: // 在线
 		{
 			plainText, err := fromConn.rsa.Decode(content)
 			if err != nil {
-				return errmsg.ServiceError
+				return errno.ServiceError
 			}
 			ciphertext, err := toConn.rsa.Encode(userinfoAppend(plainText, from))
 			if err != nil {
-				return errmsg.ServiceError
+				return errno.ServiceError
 			}
 			err = toConn.conn.WriteMessage(websocket.BinaryMessage, ciphertext)
 			if err != nil {
-				return errmsg.ServiceError
+				return errno.ServiceError
 			}
 		}
 	}
@@ -127,23 +127,23 @@ func (service ChatService) SendMessage(content []byte) error {
 func (service ChatService) ReadOfflineMessage() error {
 	uid, err := jwt.CovertJWTPayloadToString(service.ctx, service.c)
 	if err != nil {
-		return errmsg.AuthenticatorError
+		return errno.TokenInvailed
 	}
 	data, err := client.PopMessage(context.Background(), &message.PopMessageRequest{
 		Uid: uid,
 	})
 	if err != nil {
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 	toConn := userMap[uid]
 	for _, item := range (*data).Items {
 		ciphertext, err := toConn.rsa.Encode(userinfoAppend([]byte(item.Content), item.FromUid))
 		if err != nil {
-			return errmsg.ServiceError
+			return errno.ServiceError
 		}
 		err = service.conn.WriteMessage(websocket.BinaryMessage, ciphertext)
 		if err != nil {
-			return errmsg.ServiceError
+			return errno.ServiceError
 		}
 	}
 	return nil

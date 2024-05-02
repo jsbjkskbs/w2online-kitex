@@ -2082,6 +2082,20 @@ func (p *CommentDeleteRequest) FastRead(buf []byte) (int, error) {
 					goto SkipFieldError
 				}
 			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				l, err = p.FastReadField3(buf[offset:])
+				offset += l
+				if err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
+				offset += l
+				if err != nil {
+					goto SkipFieldError
+				}
+			}
 		default:
 			l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
 			offset += l
@@ -2145,6 +2159,20 @@ func (p *CommentDeleteRequest) FastReadField2(buf []byte) (int, error) {
 	return offset, nil
 }
 
+func (p *CommentDeleteRequest) FastReadField3(buf []byte) (int, error) {
+	offset := 0
+
+	if v, l, err := bthrift.Binary.ReadString(buf[offset:]); err != nil {
+		return offset, err
+	} else {
+		offset += l
+
+		p.FromUserId = v
+
+	}
+	return offset, nil
+}
+
 // for compatibility
 func (p *CommentDeleteRequest) FastWrite(buf []byte) int {
 	return 0
@@ -2156,6 +2184,7 @@ func (p *CommentDeleteRequest) FastWriteNocopy(buf []byte, binaryWriter bthrift.
 	if p != nil {
 		offset += p.fastWriteField1(buf[offset:], binaryWriter)
 		offset += p.fastWriteField2(buf[offset:], binaryWriter)
+		offset += p.fastWriteField3(buf[offset:], binaryWriter)
 	}
 	offset += bthrift.Binary.WriteFieldStop(buf[offset:])
 	offset += bthrift.Binary.WriteStructEnd(buf[offset:])
@@ -2168,6 +2197,7 @@ func (p *CommentDeleteRequest) BLength() int {
 	if p != nil {
 		l += p.field1Length()
 		l += p.field2Length()
+		l += p.field3Length()
 	}
 	l += bthrift.Binary.FieldStopLength()
 	l += bthrift.Binary.StructEndLength()
@@ -2192,6 +2222,15 @@ func (p *CommentDeleteRequest) fastWriteField2(buf []byte, binaryWriter bthrift.
 	return offset
 }
 
+func (p *CommentDeleteRequest) fastWriteField3(buf []byte, binaryWriter bthrift.BinaryWriter) int {
+	offset := 0
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "from_user_id", thrift.STRING, 3)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.FromUserId)
+
+	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
+	return offset
+}
+
 func (p *CommentDeleteRequest) field1Length() int {
 	l := 0
 	l += bthrift.Binary.FieldBeginLength("video_id", thrift.STRING, 1)
@@ -2205,6 +2244,15 @@ func (p *CommentDeleteRequest) field2Length() int {
 	l := 0
 	l += bthrift.Binary.FieldBeginLength("comment_id", thrift.STRING, 2)
 	l += bthrift.Binary.StringLengthNocopy(p.CommentId)
+
+	l += bthrift.Binary.FieldEndLength()
+	return l
+}
+
+func (p *CommentDeleteRequest) field3Length() int {
+	l := 0
+	l += bthrift.Binary.FieldBeginLength("from_user_id", thrift.STRING, 3)
+	l += bthrift.Binary.StringLengthNocopy(p.FromUserId)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l

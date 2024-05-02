@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 	"work/kitex_gen/user"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/pkg/utils"
 	"work/rpc/facade/infras/client"
 	facade_user "work/rpc/facade/model/base/user"
@@ -53,7 +53,7 @@ func AccessTokenJwtInit() {
 				return nil, err
 			}
 			if user == nil {
-				return nil, errmsg.AuthenticatorError
+				return nil, errno.InfomationNotExist
 			}
 			c.Set("user_id", user.Uid)
 			return PayloadIdentityData{Uid: fmt.Sprint(user.Uid)}, nil
@@ -132,7 +132,7 @@ func IsAccessTokenAvailable(ctx context.Context, c *app.RequestContext) bool {
 func ExtractUserIdWhenAuthorized(ctx context.Context, c *app.RequestContext) (interface{}, error) {
 	data, exist := c.Get(AccessTokenJwtMiddleware.IdentityKey)
 	if !exist {
-		return nil, errmsg.ServiceError
+		return nil, errno.InfomationNotExist
 	}
 	return data, nil
 }
@@ -158,7 +158,7 @@ func RefreshTokenJwtInit() {
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) {
 			uid, exist := c.Get("user_id")
 			if !exist {
-				return nil, errmsg.AuthenticatorError
+				return nil, errno.InfomationNotExist
 			}
 			return PayloadIdentityData{Uid: fmt.Sprint(uid)}, nil
 		},

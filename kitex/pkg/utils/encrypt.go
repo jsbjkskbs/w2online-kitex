@@ -9,7 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/pem"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 )
 
 func EncryptBySHA256(password string) string {
@@ -34,7 +34,7 @@ func (r *RsaService) Build(clientKey []byte) (err error) {
 	d := make([]byte, base64.StdEncoding.DecodedLen(len(clientKey)))
 	n, err := base64.StdEncoding.Decode(d, clientKey)
 	if err != nil {
-		return errmsg.ServiceError
+		return err
 	}
 	d = d[:n]
 	key, err := x509.ParsePKIXPublicKey(d)
@@ -43,7 +43,7 @@ func (r *RsaService) Build(clientKey []byte) (err error) {
 	}
 	var ok bool
 	if r.ClientRsaKey, ok = key.(*rsa.PublicKey); !ok {
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 	return nil
 }
@@ -59,7 +59,7 @@ func (r *RsaService) BuildWithoutClientKey() (err error) {
 
 func (r *RsaService) Decode(cryptoMsg []byte) (msg []byte, err error) {
 	if r.ServerRsaKey == nil {
-		return nil, errmsg.ServiceError
+		return nil, errno.DataProcessFailed
 	}
 	msg, err = rsa.DecryptPKCS1v15(rand.Reader, r.ServerRsaKey, cryptoMsg)
 	return
@@ -67,7 +67,7 @@ func (r *RsaService) Decode(cryptoMsg []byte) (msg []byte, err error) {
 
 func (r *RsaService) Encode(msg []byte) (cryptoMsg []byte, err error) {
 	if r.ClientRsaKey == nil {
-		return nil, errmsg.ServiceError
+		return nil, errno.DataProcessFailed
 	}
 	cryptoMsg, err = rsa.EncryptPKCS1v15(rand.Reader, r.ClientRsaKey, msg) // 不用OAEP方便测试
 	return
@@ -75,7 +75,7 @@ func (r *RsaService) Encode(msg []byte) (cryptoMsg []byte, err error) {
 
 func (r *RsaService) Signature(msg []byte) (signature []byte, err error) {
 	if r.ServerRsaKey == nil {
-		return nil, errmsg.ServiceError
+		return nil, errno.DataProcessFailed
 	}
 	hashed := sha256.Sum256(msg)
 	signature, err = rsa.SignPKCS1v15(rand.Reader, r.ServerRsaKey, crypto.SHA256, hashed[:])

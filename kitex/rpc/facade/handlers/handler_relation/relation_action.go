@@ -3,7 +3,7 @@ package handler_relation
 import (
 	"context"
 	"work/kitex_gen/relation"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
 	"work/rpc/facade/model/base"
@@ -17,13 +17,13 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var facadeReq facade_relation.RelationActionRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	var req relation.RelationActionRequest
 	if req.FromUserId, err = jwt.CovertJWTPayloadToString(ctx, c); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 	req.ActionType = facadeReq.ActionType
@@ -31,14 +31,14 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 
 	err = client.RelationAction(ctx, &req)
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_relation.RelationActionResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 	})
 }

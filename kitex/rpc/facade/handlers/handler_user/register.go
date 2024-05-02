@@ -3,7 +3,7 @@ package handler_user
 import (
 	"context"
 	"work/kitex_gen/user"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
 	"work/rpc/facade/model/base"
@@ -16,7 +16,7 @@ import (
 func UserRegister(ctx context.Context, c *app.RequestContext) {
 	var facadeReq facade_user.UserRegisterRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
@@ -26,7 +26,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	}
 	err := client.UserRegister(ctx, &req)
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
@@ -35,8 +35,8 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 
 	handlers.SendFormedResponse(c, &facade_user.UserRegisterResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		AccessToken:  c.GetString("Access-Token"),
 		RefreshToken: c.GetString("Refresh-Token"),

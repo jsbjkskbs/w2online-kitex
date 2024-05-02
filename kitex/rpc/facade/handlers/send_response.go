@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -20,12 +20,12 @@ type ResponseWithExtraMsg struct {
 }
 
 func SendResponse(c *app.RequestContext, err error, extra *map[string]interface{}) {
-	errCopy := errmsg.Convert(err)
+	errCopy := errno.Convert(err)
 	if extra == nil {
 		c.JSON(consts.StatusOK, Response{
 			Base: _Base{
-				Code: errCopy.ErrorCode,
-				Msg:  errCopy.ErrorMsg,
+				Code: errCopy.Code,
+				Msg:  errCopy.Message,
 			},
 		})
 		return
@@ -33,8 +33,8 @@ func SendResponse(c *app.RequestContext, err error, extra *map[string]interface{
 
 	c.JSON(consts.StatusOK, ResponseWithExtraMsg{
 		Base: _Base{
-			Code: errCopy.ErrorCode,
-			Msg:  errCopy.ErrorMsg,
+			Code: errCopy.Code,
+			Msg:  errCopy.Message,
 		},
 		Data: extra,
 	})

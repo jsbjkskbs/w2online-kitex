@@ -122,7 +122,7 @@ services:
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
     ports:
-      - "2379:2379"  
+      - "${ETCD_PROT}:2379"  
 
 networks:
   elastic:

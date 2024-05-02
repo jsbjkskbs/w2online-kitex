@@ -76,6 +76,20 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"Info": kitex.NewMethodInfo(
+		infoHandler,
+		newVideoServiceInfoArgs,
+		newVideoServiceInfoResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"Delete": kitex.NewMethodInfo(
+		deleteHandler,
+		newVideoServiceDeleteArgs,
+		newVideoServiceDeleteResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -304,6 +318,42 @@ func newVideoServiceVisitResult() interface{} {
 	return video.NewVideoServiceVisitResult()
 }
 
+func infoHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceInfoArgs)
+	realResult := result.(*video.VideoServiceInfoResult)
+	success, err := handler.(video.VideoService).Info(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceInfoArgs() interface{} {
+	return video.NewVideoServiceInfoArgs()
+}
+
+func newVideoServiceInfoResult() interface{} {
+	return video.NewVideoServiceInfoResult()
+}
+
+func deleteHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceDeleteArgs)
+	realResult := result.(*video.VideoServiceDeleteResult)
+	success, err := handler.(video.VideoService).Delete(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceDeleteArgs() interface{} {
+	return video.NewVideoServiceDeleteArgs()
+}
+
+func newVideoServiceDeleteResult() interface{} {
+	return video.NewVideoServiceDeleteResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -399,6 +449,26 @@ func (p *kClient) Visit(ctx context.Context, request *video.VideoVisitRequest) (
 	_args.Request = request
 	var _result video.VideoServiceVisitResult
 	if err = p.c.Call(ctx, "Visit", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) Info(ctx context.Context, request *video.VideoInfoRequest) (r *video.VideoInfoResponse, err error) {
+	var _args video.VideoServiceInfoArgs
+	_args.Request = request
+	var _result video.VideoServiceInfoResult
+	if err = p.c.Call(ctx, "Info", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) Delete(ctx context.Context, request *video.VideoDeleteRequest) (r *video.VideoDeleteResponse, err error) {
+	var _args video.VideoServiceDeleteArgs
+	_args.Request = request
+	var _result video.VideoServiceDeleteResult
+	if err = p.c.Call(ctx, "Delete", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

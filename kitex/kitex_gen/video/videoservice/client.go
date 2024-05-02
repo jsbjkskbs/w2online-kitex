@@ -20,6 +20,8 @@ type Client interface {
 	Popular(ctx context.Context, request *video.VideoPopularRequest, callOptions ...callopt.Option) (r *video.VideoPopularResponse, err error)
 	Search(ctx context.Context, request *video.VideoSearchRequest, callOptions ...callopt.Option) (r *video.VideoSearchResponse, err error)
 	Visit(ctx context.Context, request *video.VideoVisitRequest, callOptions ...callopt.Option) (r *video.VideoVisitResponse, err error)
+	Info(ctx context.Context, request *video.VideoInfoRequest, callOptions ...callopt.Option) (r *video.VideoInfoResponse, err error)
+	Delete(ctx context.Context, request *video.VideoDeleteRequest, callOptions ...callopt.Option) (r *video.VideoDeleteResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -94,4 +96,14 @@ func (p *kVideoServiceClient) Search(ctx context.Context, request *video.VideoSe
 func (p *kVideoServiceClient) Visit(ctx context.Context, request *video.VideoVisitRequest, callOptions ...callopt.Option) (r *video.VideoVisitResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Visit(ctx, request)
+}
+
+func (p *kVideoServiceClient) Info(ctx context.Context, request *video.VideoInfoRequest, callOptions ...callopt.Option) (r *video.VideoInfoResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.Info(ctx, request)
+}
+
+func (p *kVideoServiceClient) Delete(ctx context.Context, request *video.VideoDeleteRequest, callOptions ...callopt.Option) (r *video.VideoDeleteResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.Delete(ctx, request)
 }

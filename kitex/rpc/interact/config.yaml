@@ -1,0 +1,19 @@
+MysqlDSN: "work:work123456@tcp(localhost:13306)/work"
+
+Redis:
+    video_info:
+        address: "localhost:16379"
+        password: "work123456"
+        db: 0
+    video_upload:
+        address: "localhost:16379"
+        password: "work123456"
+        db: 1
+    comment_info:
+        address: "localhost:16379"
+        password: "work123456"
+        db: 2
+
+ElasticAddr: "http://localhost:9200"
+
+RabbitmqDSN: "amqp://work:work123456@localhost:5672/"

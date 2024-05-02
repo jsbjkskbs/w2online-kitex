@@ -3,7 +3,7 @@ package handler_video
 import (
 	"context"
 	"work/kitex_gen/video"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
 	"work/rpc/facade/model/base"
@@ -15,22 +15,23 @@ import (
 func VideoVisit(ctx context.Context, c *app.RequestContext) {
 	var facadeReq facade_video.VideoVisitRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	var req video.VideoVisitRequest
 	req.FromIp = c.ClientIP()
+	req.VideoId = c.Param("id")
 	data, err := client.VideoVisit(ctx, &req)
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_video.VideoVisitResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		Item: &base.Video{
 			Id:           data.Id,

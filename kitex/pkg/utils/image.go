@@ -5,7 +5,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 )
 
 type ImageInfo struct {
@@ -24,7 +24,7 @@ func (ImageInfo) Get(data []byte, tag string) (height, width int, err error) {
 	case `image/png`:
 		imgCfg, err = png.DecodeConfig(bytes.NewReader(data))
 	default:
-		return -1, -1, errmsg.FileFormatNotSupportError
+		return -1, -1, errno.DataProcessFailed
 	}
 	if err != nil {
 		return -1, -1, err

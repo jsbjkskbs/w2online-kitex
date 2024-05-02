@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"work/pkg/errmsg"
-
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
@@ -17,7 +15,7 @@ func M3u8ToMp4(input, output string) error {
 		OverWriteOutput().
 		Run()
 	if err != nil {
-		return errmsg.FfmpegError
+		return err
 	}
 	return nil
 }
@@ -31,7 +29,7 @@ func GenerateMp4CoverJpg(input, output string) error {
 		OverWriteOutput().
 		Run()
 	if err != nil {
-		return errmsg.FfmpegError
+		return err
 	}
 	return nil
 }

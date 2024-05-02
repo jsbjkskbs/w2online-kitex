@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 )
 
 type BaseHttpResponse struct {
@@ -10,23 +10,23 @@ type BaseHttpResponse struct {
 	StatusMsg  string
 }
 
-func baseHttpResponse(err errmsg.ErrorMessage) *BaseHttpResponse {
+func baseHttpResponse(err errno.Errno) *BaseHttpResponse {
 	return &BaseHttpResponse{
-		StatusCode: err.ErrorCode,
-		StatusMsg:  err.ErrorMsg,
+		StatusCode: err.Code,
+		StatusMsg:  err.Message,
 	}
 }
 
 func CreateBaseHttpResponse(err error) *BaseHttpResponse {
 	if err == nil {
-		return baseHttpResponse(errmsg.NoError)
+		return baseHttpResponse(errno.NoError)
 	}
 
-	e:=errmsg.ErrorMessage{}
-	if errors.As(err,&e){
+	e := errno.Errno{}
+	if errors.As(err, &e) {
 		return baseHttpResponse(e)
 	}
 
-	s:=errmsg.ServiceError.WithMessage(err.Error())
+	s := errno.ServiceError.WithMessage(err.Error())
 	return baseHttpResponse(s)
 }

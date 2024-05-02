@@ -1,0 +1,5 @@
+package rabbitmq
+
+var (
+	RabbitmqDSN = ``
+)

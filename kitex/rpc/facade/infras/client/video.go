@@ -6,11 +6,13 @@ import (
 	"work/kitex_gen/base"
 	"work/kitex_gen/video"
 	"work/kitex_gen/video/videoservice"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
+	"work/pkg/jaeger_suite"
 	conf "work/rpc/rpc_conf"
 
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/retry"
+	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
@@ -22,12 +24,17 @@ func initVideoRpc() {
 		panic(err)
 	}
 
+	suite, closer := jaeger_suite.NewClientTracer().Init(conf.FacadeServiceName)
+	defer closer.Close()
+
 	c, err := videoservice.NewClient(
 		conf.VideoServiceName,
 		client.WithRPCTimeout(3*time.Second),
 		client.WithConnectTimeout(50*time.Second),
 		client.WithFailureRetry(retry.NewFailurePolicy()),
 		client.WithResolver(r),
+		client.WithSuite(suite),
+		client.WithClientBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.FacadeServiceName}),
 	)
 	if err != nil {
 		panic(err)
@@ -40,8 +47,8 @@ func VideoFeed(ctx context.Context, req *video.VideoFeedRequest) (*video.VideoFe
 	if err != nil {
 		return nil, err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return nil, errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return resp.Data, nil
@@ -52,8 +59,8 @@ func VideoList(ctx context.Context, req *video.VideoListRequest) (*video.VideoLi
 	if err != nil {
 		return nil, err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return nil, errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return resp.Data, nil
@@ -64,8 +71,8 @@ func VideoPopular(ctx context.Context, req *video.VideoPopularRequest) (*video.V
 	if err != nil {
 		return nil, err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return nil, errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return resp.Data, nil
@@ -76,8 +83,8 @@ func VideoSearch(ctx context.Context, req *video.VideoSearchRequest) (*video.Vid
 	if err != nil {
 		return nil, err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return nil, errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return resp.Data, nil
@@ -88,8 +95,8 @@ func VideoPublishStart(ctx context.Context, req *video.VideoPublishStartRequest)
 	if err != nil {
 		return ``, err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return ``, errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return ``, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return resp.Uuid, nil
@@ -100,8 +107,8 @@ func VideoPublishUploading(ctx context.Context, req *video.VideoPublishUploading
 	if err != nil {
 		return err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return nil
@@ -112,8 +119,8 @@ func VideoPublishCancle(ctx context.Context, req *video.VideoPublishCancleReques
 	if err != nil {
 		return err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return nil
@@ -124,8 +131,8 @@ func VideoPublishComplete(ctx context.Context, req *video.VideoPublishCompleteRe
 	if err != nil {
 		return err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return nil
@@ -136,8 +143,8 @@ func VideoVisit(ctx context.Context, req *video.VideoVisitRequest) (*base.Video,
 	if err != nil {
 		return nil, err
 	}
-	if resp.Base.Code != errmsg.NoError.ErrorCode {
-		return nil, errmsg.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	if resp.Base.Code != errno.NoError.Code {
+		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
 	}
 
 	return resp.Item, nil

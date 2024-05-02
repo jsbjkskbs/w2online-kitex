@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 	"work/kitex_gen/user"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/pkg/utils"
 	"work/rpc/user/dal/db"
-	"work/rpc/user/oss"
+	"work/rpc/user/infras/oss"
 )
 
 type UserService struct {
@@ -25,10 +25,10 @@ func NewUserService(ctx context.Context) *UserService {
 func (service UserService) NewRegisterEvent(request *user.UserRegisterRequest) (uid string, err error) {
 	exist, err := db.UserIsExistByUsername(request.Username)
 	if err != nil {
-		return ``, errmsg.ServiceError
+		return ``, errno.ServiceError
 	}
 	if exist {
-		return ``, errmsg.UsernameAlreadyExistError
+		return ``, errno.InfomationAlreadyExistError
 	}
 	uid, err = db.InsertUser(&db.User{
 		Username:  request.Username,
@@ -40,7 +40,7 @@ func (service UserService) NewRegisterEvent(request *user.UserRegisterRequest) (
 		MfaEnable: false,
 	})
 	if err != nil {
-		return ``, errmsg.ServiceError
+		return ``, errno.ServiceError
 	}
 	return uid, nil
 }
@@ -48,12 +48,12 @@ func (service UserService) NewRegisterEvent(request *user.UserRegisterRequest) (
 func (service UserService) NewLoginEvent(request *user.UserLoginRequest) (*db.User, error) {
 	user, err := db.GetUserByUsernameAndPwd(request.Username, utils.EncryptBySHA256(request.Password))
 	if err != nil {
-		return nil, errmsg.ServiceError
+		return nil, errno.ServiceError
 	}
 	if user.MfaEnable {
 		passed := utils.NewAuthController(fmt.Sprint(user.Uid), request.Code, user.MfaSecret).VerifyTOTP()
 		if !passed {
-			return nil, errmsg.AuthenticatorError
+			return nil, errno.TOTPAuthenticatedFailed
 		}
 	}
 	return user, nil
@@ -66,7 +66,7 @@ func (service UserService) NewInfoEvent(request *user.UserInfoRequest) (*db.User
 func (service UserService) NewAvatarUploadEvent(request *user.UserAvatarUploadRequest) (*db.User, error) {
 	data, err := service.uploadAvatarToOss(request.UserId, request.Data, request.Filesize)
 	if err != nil {
-		return nil, errmsg.ServiceError
+		return nil, errno.OSSError
 	}
 
 	return data, nil
@@ -75,7 +75,7 @@ func (service UserService) NewAvatarUploadEvent(request *user.UserAvatarUploadRe
 func (service UserService) NewQrcodeEvent(request *user.AuthMfaQrcodeRequest) (*user.AuthMfaQrcodeResponse, error) {
 	authInfo, err := utils.NewAuthController(request.UserId, ``, ``).GenerateTOTP()
 	if err != nil {
-		return nil, errmsg.ServiceError
+		return nil, errno.ServiceError
 	}
 
 	return &user.AuthMfaQrcodeResponse{
@@ -89,11 +89,11 @@ func (service UserService) NewQrcodeEvent(request *user.AuthMfaQrcodeRequest) (*
 func (service UserService) NewMfaBindEvent(request *user.AuthMfaBindRequest) error {
 	passed := utils.NewAuthController(request.UserId, request.Code, request.Secret).VerifyTOTP()
 	if !passed {
-		return errmsg.AuthenticatorError
+		return errno.TOTPAuthenticatedFailed
 	}
 
 	if err := db.UpdateMfaSecret(request.UserId, request.Secret); err != nil {
-		return errmsg.ServiceError
+		return errno.ServiceError
 	}
 	return nil
 }
@@ -106,15 +106,15 @@ func (service UserService) uploadAvatarToOss(uid string, avatarRawData []byte, f
 			var avatarUrl string
 			var err error
 			if avatarUrl, err = oss.UploadAvatar(&avatarRawData, filesize, fmt.Sprint(uid), fileType); err != nil {
-				return nil, errmsg.OssUploadError
+				return nil, errno.ServiceError
 			}
 			data, err := db.UpdateAvatarUrl(uid, avatarUrl)
 			if err != nil {
-				return nil, errmsg.ServiceError
+				return nil, errno.ServiceError
 			}
 			return data, nil
 		}
 	default:
-		return nil, errmsg.FileFormatNotSupportError
+		return nil, errno.DataProcessFailed
 	}
 }

@@ -20,7 +20,7 @@ func Register(h *server.Hertz) {
 			_list.GET("/", handler_video.VideoList)
 		}
 		{
-			_popular := _video.Group("/popular", auth.Auth()...)
+			_popular := _video.Group("/popular")
 			_popular.GET("/", handler_video.VideoPopular)
 		}
 		{

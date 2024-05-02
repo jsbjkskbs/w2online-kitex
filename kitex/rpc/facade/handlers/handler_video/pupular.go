@@ -3,7 +3,7 @@ package handler_video
 import (
 	"context"
 	"work/kitex_gen/video"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/handlers/handler_video/convert"
 	"work/rpc/facade/infras/client"
@@ -16,7 +16,7 @@ import (
 func VideoPopular(ctx context.Context, c *app.RequestContext) {
 	var facadeReq facade_video.VideoPopularRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
@@ -25,14 +25,14 @@ func VideoPopular(ctx context.Context, c *app.RequestContext) {
 		PageSize: facadeReq.PageSize,
 	})
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_video.VideoPopularResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		Data: &facade_video.VideoPopularResponse_VideoPopularResponseData{
 			Items: *convert.KitexGenToRespVideo(&data.Items),

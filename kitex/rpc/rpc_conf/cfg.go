@@ -3,6 +3,7 @@ package conf
 var (
 	EtcdAddress = "localhost:2379"
 
+	FacadeServiceName   = "work.facade"
 	InteractServiceName = "work.interact"
 	RelationServiceName = "work.relation"
 	UserServiceName     = "work.user"
@@ -14,4 +15,6 @@ var (
 	UserServiceAddress     = "localhost:8890"
 	VideoServiceAddress    = "localhost:8891"
 	MessageServiceAddress  = "localhost:8892"
+
+	ExportEndpoint = `localhost:4317`
 )

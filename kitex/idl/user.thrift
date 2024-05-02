@@ -23,7 +23,7 @@ struct UserLoginResponse {
 }
 
 struct UserInfoRequest {
-    1: required string user_id;
+    1: string user_id;
 }
 
 struct UserInfoResponse {

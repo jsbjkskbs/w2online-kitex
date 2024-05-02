@@ -3,7 +3,7 @@ package handler_video
 import (
 	"context"
 	"work/kitex_gen/video"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/handlers/handler_video/convert"
 	"work/rpc/facade/infras/client"
@@ -16,7 +16,7 @@ import (
 func VideoFeed(ctx context.Context, c *app.RequestContext) {
 	var facadeReq facade_video.VideoFeedRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
@@ -24,14 +24,14 @@ func VideoFeed(ctx context.Context, c *app.RequestContext) {
 		LatestTime: facadeReq.LatestTime,
 	})
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_video.VideoFeedResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		Data: &facade_video.VideoFeedResponse_VideoFeedResponseData{
 			Items: *convert.KitexGenToRespVideo(&data.Items),

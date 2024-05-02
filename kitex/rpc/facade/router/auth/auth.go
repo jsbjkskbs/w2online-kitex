@@ -2,14 +2,11 @@ package auth
 
 import (
 	"context"
-	"work/kitex_gen/base"
-	"work/kitex_gen/user"
-	"work/pkg/errmsg"
-	"work/pkg/utils"
+	"work/pkg/errno"
+	"work/rpc/facade/handlers"
 	"work/rpc/facade/mw/jwt"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 func Auth() []app.HandlerFunc {
@@ -23,13 +20,7 @@ func DoubleTokenAuthFunc() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		if !jwt.IsAccessTokenAvailable(ctx, c) {
 			if !jwt.IsRefreshTokenAvailable(ctx, c) {
-				resp := utils.CreateBaseHttpResponse(errmsg.TokenIsInavailableError)
-				c.JSON(consts.StatusOK, user.UserLoginResponse{
-					Base: &base.Status{
-						Code: resp.StatusCode,
-						Msg:  resp.StatusMsg,
-					},
-				})
+				handlers.SendResponse(c, errno.TokenInvailed, nil)
 				c.Abort()
 				return
 			}

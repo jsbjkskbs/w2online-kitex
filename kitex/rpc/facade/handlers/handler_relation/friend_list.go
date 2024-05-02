@@ -3,7 +3,7 @@ package handler_relation
 import (
 	"context"
 	"work/kitex_gen/relation"
-	"work/pkg/errmsg"
+	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/handlers/handler_relation/convert"
 	"work/rpc/facade/infras/client"
@@ -18,13 +18,13 @@ func FriendList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var facadeReq facade_relation.FriendListRequest
 	if err := c.BindAndValidate(&facadeReq); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	var req relation.FriendListRequest
 	if req.UserId, err = jwt.CovertJWTPayloadToString(ctx, c); err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 	req.PageNum = facadeReq.PageNum
@@ -32,14 +32,14 @@ func FriendList(ctx context.Context, c *app.RequestContext) {
 
 	data, err := client.FriendList(ctx, &req)
 	if err != nil {
-		handlers.SendResponse(c, errmsg.Convert(err), nil)
+		handlers.SendResponse(c, errno.Convert(err), nil)
 		return
 	}
 
 	handlers.SendFormedResponse(c, &facade_relation.FriendListResponse{
 		Base: &base.Status{
-			Code: errmsg.NoError.ErrorCode,
-			Msg:  errmsg.NoError.ErrorMsg,
+			Code: errno.NoError.Code,
+			Msg:  errno.NoError.Message,
 		},
 		Data: &facade_relation.FriendListResponse_FriendListResponseData{
 			Items: *convert.KitexGenToRespUserLite(&data.Items),
