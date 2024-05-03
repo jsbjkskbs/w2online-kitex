@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"strconv"
 	"sync"
 	"work/pkg/errno"
 	"work/rpc/interact/dal/db"
@@ -16,6 +17,15 @@ func PutVideoLikeInfo(vid string, uidList *[]string) error {
 		pipe.SAdd(`l:`+vid, item)
 	}
 	if _, err := pipe.Exec(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func PutVideoVisitInfo(vid, visitCount string) error {
+	score, _ := strconv.ParseFloat(visitCount, 64)
+	_, err := redisDBVideoInfo.ZAdd(`visit`, redis.Z{Score: score, Member: vid}).Result()
+	if err != nil {
 		return err
 	}
 	return nil
@@ -58,6 +68,14 @@ func RemoveVideoLikeInfo(vid, uid string) error {
 		return err
 	}
 	if _, err := redisDBVideoInfo.SRem(`l:`+vid, uid).Result(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func IncrVideoVisitInfo(vid string) error {
+	_, err := redisDBVideoInfo.ZIncrBy(`visit`, 1, vid).Result()
+	if err != nil {
 		return err
 	}
 	return nil
@@ -155,11 +173,13 @@ func DeleteVideoAndAllAbout(vid string) error {
 		return err
 	}
 
+	videoPipe.Del(`nl:` + vid)
 	videoPipe.Del(`l:` + vid)
 	videoPipe.ZRem(`visit`, vid)
 
 	for _, item := range *commentList {
 		commentPipe.Del(`l:` + item)
+		commentPipe.Del(`nl:` + item)
 	}
 
 	var (

@@ -310,3 +310,26 @@ func deleteComment(request *interact.CommentDeleteRequest) error {
 	}
 	return nil
 }
+
+func (service InteractService) NewVideoVisitEvent(request *interact.VideoVisitRequest) (*base.Video, error) {
+	data, err := client.VideoInfo(context.Background(), &video.VideoInfoRequest{VideoId: request.VideoId})
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (service InteractService) NewVideoPopularListEvent(request *interact.VideoPopularListRequest) (*[]string, error) {
+	list, err := redis.GetVideoPopularList(request.PageNum, request.PageSize)
+	if err != nil {
+		return nil, errno.RedisError
+	}
+	return list, nil
+}
+
+func (service InteractService) NewDeleteVideoInfoEvent(request *interact.DeleteVideoInfoRequest) (error) {
+	if err := redis.DeleteVideoAndAllAbout(request.VideoId);err!=nil{
+		return err
+	}
+	return nil
+}

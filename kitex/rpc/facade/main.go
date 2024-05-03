@@ -7,7 +7,6 @@ import (
 	webs "work/rpc/facade/router/websocket"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
-	"github.com/hertz-contrib/pprof"
 )
 
 func Init() {
@@ -22,7 +21,6 @@ func main() {
 	h := server.Default(
 		server.WithHostPorts(`:10001`),
 	)
-	pprof.Register(h)
 	router.Register(h)
 
 	ws := server.Default(

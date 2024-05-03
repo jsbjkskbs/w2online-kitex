@@ -27,17 +27,20 @@ type Video struct {
 	Info        VideoOtherdata `json:"info"`
 }
 
-func UpdateVideoCommentAndLikeCount(vid, likeCount, commentCount string) error {
+func UpdateVideoLikeVisitAndCommentCount(vid, likeCount, visitCount, commentCount string) error {
 	bulk := elasticClient.Bulk()
 	var (
+		newVisitCount, _   = strconv.ParseInt(visitCount, 10, 64)
 		newLikeCount, _    = strconv.ParseInt(likeCount, 10, 64)
 		newCommentCount, _ = strconv.ParseInt(commentCount, 10, 64)
 	)
+	vRequest := elastic.NewBulkUpdateRequest().Index("video").Type("_doc").Id(vid).
+		Script(elastic.NewScript(`"ctx._source.info.visit_count=params.new_visit_count"`).Param("new_visit_count", newVisitCount))
 	lRequest := elastic.NewBulkUpdateRequest().Index("video").Type("_doc").Id(vid).
 		Script(elastic.NewScript(`"ctx._source.info.like_count=params.new_like_count"`).Param("new_like_count", newLikeCount))
 	cRequest := elastic.NewBulkUpdateRequest().Index("video").Type("_doc").Id(vid).
 		Script(elastic.NewScript(`"ctx._source.info.comment_count=params.new_comment_count"`).Param("new_comment_count", newCommentCount))
-	bulk.Add(lRequest, cRequest)
+	bulk.Add(vRequest, lRequest, cRequest)
 	if _, err := bulk.Do(context.Background()); err != nil {
 		return err
 	}

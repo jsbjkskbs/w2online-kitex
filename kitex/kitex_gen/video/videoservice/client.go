@@ -19,9 +19,11 @@ type Client interface {
 	List(ctx context.Context, request *video.VideoListRequest, callOptions ...callopt.Option) (r *video.VideoListResponse, err error)
 	Popular(ctx context.Context, request *video.VideoPopularRequest, callOptions ...callopt.Option) (r *video.VideoPopularResponse, err error)
 	Search(ctx context.Context, request *video.VideoSearchRequest, callOptions ...callopt.Option) (r *video.VideoSearchResponse, err error)
-	Visit(ctx context.Context, request *video.VideoVisitRequest, callOptions ...callopt.Option) (r *video.VideoVisitResponse, err error)
 	Info(ctx context.Context, request *video.VideoInfoRequest, callOptions ...callopt.Option) (r *video.VideoInfoResponse, err error)
 	Delete(ctx context.Context, request *video.VideoDeleteRequest, callOptions ...callopt.Option) (r *video.VideoDeleteResponse, err error)
+	IdList(ctx context.Context, request *video.VideoIdListRequest, callOptions ...callopt.Option) (r *video.VideoIdListResponse, err error)
+	UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest, callOptions ...callopt.Option) (r *video.UpdateVisitCountResponse, err error)
+	GetVideoVisitCount(ctx context.Context, request *video.GetVideoVisitCountRequest, callOptions ...callopt.Option) (r *video.GetVideoVisitCountResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -93,11 +95,6 @@ func (p *kVideoServiceClient) Search(ctx context.Context, request *video.VideoSe
 	return p.kClient.Search(ctx, request)
 }
 
-func (p *kVideoServiceClient) Visit(ctx context.Context, request *video.VideoVisitRequest, callOptions ...callopt.Option) (r *video.VideoVisitResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Visit(ctx, request)
-}
-
 func (p *kVideoServiceClient) Info(ctx context.Context, request *video.VideoInfoRequest, callOptions ...callopt.Option) (r *video.VideoInfoResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Info(ctx, request)
@@ -106,4 +103,19 @@ func (p *kVideoServiceClient) Info(ctx context.Context, request *video.VideoInfo
 func (p *kVideoServiceClient) Delete(ctx context.Context, request *video.VideoDeleteRequest, callOptions ...callopt.Option) (r *video.VideoDeleteResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Delete(ctx, request)
+}
+
+func (p *kVideoServiceClient) IdList(ctx context.Context, request *video.VideoIdListRequest, callOptions ...callopt.Option) (r *video.VideoIdListResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.IdList(ctx, request)
+}
+
+func (p *kVideoServiceClient) UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest, callOptions ...callopt.Option) (r *video.UpdateVisitCountResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.UpdateVisitCount(ctx, request)
+}
+
+func (p *kVideoServiceClient) GetVideoVisitCount(ctx context.Context, request *video.GetVideoVisitCountRequest, callOptions ...callopt.Option) (r *video.GetVideoVisitCountResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetVideoVisitCount(ctx, request)
 }

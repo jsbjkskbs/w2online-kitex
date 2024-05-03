@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"work/kitex_gen/base"
 	"work/kitex_gen/video"
@@ -64,4 +65,40 @@ func VideoDelete(ctx context.Context, req *video.VideoDeleteRequest) error {
 	}
 
 	return nil
+}
+
+func VideoIdList(ctx context.Context, req *video.VideoIdListRequest) (bool, *[]string, error) {
+	resp, err := videoClient.IdList(ctx, req)
+	if err != nil {
+		return true, nil, err
+	}
+	if resp.Base.Code != errno.NoError.Code {
+		return true, nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	}
+
+	return resp.IsEnd, &resp.List, nil
+}
+
+func UpdateVideoVisitCount(ctx context.Context, req *video.UpdateVisitCountRequest) error {
+	resp, err := videoClient.UpdateVisitCount(ctx, req)
+	if err != nil {
+		return err
+	}
+	if resp.Base.Code != errno.NoError.Code {
+		return errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	}
+
+	return nil
+}
+
+func GetVideoVisitCount(ctx context.Context, req *video.GetVideoVisitCountRequest) (string, error) {
+	resp, err := videoClient.GetVideoVisitCount(ctx, req)
+	if err != nil {
+		return ``, err
+	}
+	if resp.Base.Code != errno.NoError.Code {
+		return ``, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	}
+
+	return fmt.Sprint(resp.VisitCount), nil
 }

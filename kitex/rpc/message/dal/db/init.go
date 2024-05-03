@@ -1,6 +1,8 @@
 package db
 
 import (
+	"work/pkg/sharding"
+
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -23,6 +25,9 @@ func Load() {
 		panic(err)
 	}
 	if err = DB.Use(gormopentracing.New()); err != nil {
+		panic(err)
+	}
+	if err = DB.Use(sharding.NewSharding("to_user_id", 4, "messages")); err != nil {
 		panic(err)
 	}
 

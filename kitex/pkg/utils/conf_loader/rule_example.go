@@ -18,7 +18,7 @@ func Register(v ...any) {
 	RuleTable = []*ConfLoadRule{
 		{
 			RuleName: "example",
-			Level:    LevelIgnore,
+			Level:    LevelWarn,
 
 			ConfLoadMethodParam: []interface{}{
 				&example_param_a,

@@ -50,9 +50,9 @@ func UpdateVideoVisit(vid, visitCount string) error {
 	return nil
 }
 
-func GetVideoIdList() (*[]string, error) {
+func GetVideoIdList(pageNum, pageSize int64) (*[]string, error) {
 	list := make([]string, 0)
-	if err := DB.Table(`videos`).Select("id").Scan(&list).Error; err != nil {
+	if err := DB.Table(`videos`).Select("id").Limit(int(pageSize)).Offset(int(pageNum)).Scan(&list).Error; err != nil {
 		return nil, err
 	}
 	return &list, nil

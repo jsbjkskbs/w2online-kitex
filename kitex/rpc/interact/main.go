@@ -17,9 +17,9 @@ import (
 
 func Init() {
 	conf_loader.Init()
+	client.Init()
 	syncman.NewCommentSyncman().Run()
 	syncman.NewVideoSyncman().Run()
-	client.Init()
 }
 
 func main() {

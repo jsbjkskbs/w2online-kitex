@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"time"
-	"work/kitex_gen/base"
 	"work/kitex_gen/video"
 	"work/kitex_gen/video/videoservice"
 	"work/pkg/errno"
@@ -136,16 +135,4 @@ func VideoPublishComplete(ctx context.Context, req *video.VideoPublishCompleteRe
 	}
 
 	return nil
-}
-
-func VideoVisit(ctx context.Context, req *video.VideoVisitRequest) (*base.Video, error) {
-	resp, err := videoClient.Visit(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	if resp.Base.Code != errno.NoError.Code {
-		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
-	}
-
-	return resp.Item, nil
 }

@@ -198,31 +198,6 @@ func (s *VideoServiceImpl) Search(ctx context.Context, request *video.VideoSearc
 	return resp, nil
 }
 
-// Visit implements the VideoServiceImpl interface.
-func (s *VideoServiceImpl) Visit(ctx context.Context, request *video.VideoVisitRequest) (resp *video.VideoVisitResponse, err error) {
-	// TODO: Your code here...
-	resp = new(video.VideoVisitResponse)
-	resp.Item = &base.Video{}
-
-	data, err := service.NewVideoService(ctx).NewVisitEvent(request)
-	if err != nil {
-		respErr := utils.CreateBaseHttpResponse(err)
-		resp.Base = &base.Status{
-			Code: respErr.StatusCode,
-			Msg:  respErr.StatusMsg,
-		}
-		resp.Item = &base.Video{}
-		return resp, nil
-	}
-
-	resp.Base = &base.Status{
-		Code: errno.NoError.Code,
-		Msg:  errno.NoError.Message,
-	}
-	resp.Item = data
-	return resp, nil
-}
-
 // Info implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) Info(ctx context.Context, request *video.VideoInfoRequest) (resp *video.VideoInfoResponse, err error) {
 	// TODO: Your code here...
@@ -267,5 +242,74 @@ func (s *VideoServiceImpl) Delete(ctx context.Context, request *video.VideoDelet
 		Code: errno.NoError.Code,
 		Msg:  errno.NoError.Message,
 	}
+	return resp, nil
+}
+
+// IdList implements the VideoServiceImpl interface.
+func (s *VideoServiceImpl) IdList(ctx context.Context, request *video.VideoIdListRequest) (resp *video.VideoIdListResponse, err error) {
+	// TODO: Your code here...
+	resp = new(video.VideoIdListResponse)
+
+	isEnd, list, err := service.NewVideoService(ctx).NewIdListEvent(request)
+	if err != nil {
+		respErr := utils.CreateBaseHttpResponse(err)
+		resp.Base = &base.Status{
+			Code: respErr.StatusCode,
+			Msg:  respErr.StatusMsg,
+		}
+		return resp, nil
+	}
+
+	resp.Base = &base.Status{
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
+	}
+	resp.IsEnd = isEnd
+	resp.List = *list
+	return resp, nil
+}
+
+// UpdateVisitCount implements the VideoServiceImpl interface.
+func (s *VideoServiceImpl) UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest) (resp *video.UpdateVisitCountResponse, err error) {
+	// TODO: Your code here...
+	resp = new(video.UpdateVisitCountResponse)
+
+	err = service.NewVideoService(ctx).NewUpdateVideoVisitCountEvent(request)
+	if err != nil {
+		respErr := utils.CreateBaseHttpResponse(err)
+		resp.Base = &base.Status{
+			Code: respErr.StatusCode,
+			Msg:  respErr.StatusMsg,
+		}
+		return resp, nil
+	}
+
+	resp.Base = &base.Status{
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
+	}
+	return resp, nil
+}
+
+// GetVideoVisitCount implements the VideoServiceImpl interface.
+func (s *VideoServiceImpl) GetVideoVisitCount(ctx context.Context, request *video.GetVideoVisitCountRequest) (resp *video.GetVideoVisitCountResponse, err error) {
+	// TODO: Your code here...
+	resp = new(video.GetVideoVisitCountResponse)
+
+	count, err := service.NewVideoService(ctx).NewGetVisitCountEvent(request)
+	if err != nil {
+		respErr := utils.CreateBaseHttpResponse(err)
+		resp.Base = &base.Status{
+			Code: respErr.StatusCode,
+			Msg:  respErr.StatusMsg,
+		}
+		return resp, nil
+	}
+
+	resp.Base = &base.Status{
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
+	}
+	resp.VisitCount = count
 	return resp, nil
 }

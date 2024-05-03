@@ -6,6 +6,7 @@ import (
 	"time"
 	"work/pkg/errno"
 
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/go-redis/redis"
 )
 
@@ -111,6 +112,7 @@ func FinishVideoEvent(uuid, uid string) ([]string, error) {
 }
 
 func DeleteVideoEvent(uuid, uid string) error {
+	hlog.Info("l:" + uid + ":" + uuid)
 	pipe := redisDBVideoUpload.TxPipeline()
 	pipe.Del("l:" + uid + ":" + uuid)
 	pipe.Del("b:" + uid + ":" + uuid)

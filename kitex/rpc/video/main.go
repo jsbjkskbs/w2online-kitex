@@ -7,7 +7,6 @@ import (
 	conf "work/rpc/rpc_conf"
 	"work/rpc/video/common/conf_loader"
 	"work/rpc/video/common/dustman"
-	"work/rpc/video/common/syncman"
 	"work/rpc/video/infras/client"
 
 	"github.com/cloudwego/kitex/pkg/klog"
@@ -19,7 +18,6 @@ import (
 func Init() {
 	conf_loader.Init()
 	client.Init()
-	syncman.NewVideoSyncman().Run()
 	dustman.NewFileDustman().Run()
 	dustman.NewRedisDustman().Run()
 }

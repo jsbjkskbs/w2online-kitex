@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 	"work/kitex_gen/base"
+	"work/kitex_gen/interact"
 	kuser "work/kitex_gen/user"
 	"work/kitex_gen/video"
 	"work/pkg/constants"
@@ -172,15 +173,6 @@ func (service VideoService) NewUploadCompleteEvent(request *video.VideoPublishCo
 		return errno.ServiceError
 	}
 
-	err = redis.PutVideoVisitInfo(vid, `0`)
-	if err != nil {
-		return errno.RedisError
-	}
-	err = redis.PutVideoLikeInfo(vid, nil)
-	if err != nil {
-		return errno.RedisError
-	}
-
 	return nil
 }
 
@@ -270,18 +262,6 @@ func (service VideoService) NewListEvent(request *video.VideoListRequest) (*vide
 	return &video.VideoListResponseData{Data: items, Total: total}, nil
 }
 
-func (service VideoService) NewVisitEvent(request *video.VideoVisitRequest) (*base.Video, error) {
-	vid := request.VideoId
-	if err := redis.IncrVideoVisitInfo(vid); err != nil {
-		return nil, errno.RedisError
-	}
-	info, err := elasticsearch.GetVideoDoc(vid)
-	if err != nil {
-		return nil, errno.ElasticError
-	}
-	return info, nil
-}
-
 func (service VideoService) NewPopularEvent(request *video.VideoPopularRequest) (*video.VideoPopularResponseData, error) {
 	if request.PageNum <= 0 {
 		request.PageNum = 1
@@ -289,7 +269,11 @@ func (service VideoService) NewPopularEvent(request *video.VideoPopularRequest) 
 	if request.PageSize <= 0 {
 		request.PageSize = constants.DefaultPageSize
 	}
-	list, err := redis.GetVideoPopularList(request.PageNum, request.PageSize)
+	list, err := client.VideoPopularList(context.Background(),
+		&interact.VideoPopularListRequest{
+			PageNum:  request.PageNum,
+			PageSize: request.PageSize,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -338,7 +322,10 @@ func (service VideoService) NewDeleteEvent(request *video.VideoDeleteRequest) er
 		wg.Done()
 	}()
 	go func() {
-		if err := redis.DeleteVideo(request.VideoId); err != nil {
+		if err := client.DeleteVideoInfo(context.Background(),
+			&interact.DeleteVideoInfoRequest{
+				VideoId: request.VideoId,
+			}); err != nil {
 			errChan <- errno.RedisError
 		}
 		wg.Done()
@@ -356,6 +343,31 @@ func (service VideoService) NewDeleteEvent(request *video.VideoDeleteRequest) er
 	default:
 	}
 	return nil
+}
+
+func (service VideoService) NewIdListEvent(request *video.VideoIdListRequest) (bool, *[]string, error) {
+	list, err := db.GetVideoIdList(request.PageNum, request.PageSize)
+	if err != nil {
+		return true, nil, errno.MySQLError
+	}
+	return len(*list) < int(request.PageSize), list, nil
+}
+
+func (service VideoService) NewUpdateVideoVisitCountEvent(request *video.UpdateVisitCountRequest) error {
+	err := db.UpdateVideoVisit(request.VideoId, fmt.Sprint(request.VisitCount))
+	if err != nil {
+		return errno.MySQLError
+	}
+	return nil
+}
+
+func (service VideoService) NewGetVisitCountEvent(request *video.GetVideoVisitCountRequest) (int64, error) {
+	data, err := db.GetVideoVisitCount(request.VideoId)
+	if err != nil {
+		return -1, err
+	}
+	count, _ := strconv.ParseInt(data, 10, 64)
+	return count, nil
 }
 
 func (service VideoService) deleteTempDir(path string) error {

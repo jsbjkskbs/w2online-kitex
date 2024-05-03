@@ -1,8 +1,8 @@
-package handler_video
+package handler_interact
 
 import (
 	"context"
-	"work/kitex_gen/video"
+	"work/kitex_gen/interact"
 	"work/pkg/errno"
 	"work/rpc/facade/handlers"
 	"work/rpc/facade/infras/client"
@@ -19,7 +19,7 @@ func VideoVisit(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	var req video.VideoVisitRequest
+	var req interact.VideoVisitRequest
 	req.FromIp = c.ClientIP()
 	req.VideoId = c.Param("id")
 	data, err := client.VideoVisit(ctx, &req)

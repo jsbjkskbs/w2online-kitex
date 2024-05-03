@@ -69,13 +69,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
-	"Visit": kitex.NewMethodInfo(
-		visitHandler,
-		newVideoServiceVisitArgs,
-		newVideoServiceVisitResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
 	"Info": kitex.NewMethodInfo(
 		infoHandler,
 		newVideoServiceInfoArgs,
@@ -87,6 +80,27 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		deleteHandler,
 		newVideoServiceDeleteArgs,
 		newVideoServiceDeleteResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"IdList": kitex.NewMethodInfo(
+		idListHandler,
+		newVideoServiceIdListArgs,
+		newVideoServiceIdListResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"UpdateVisitCount": kitex.NewMethodInfo(
+		updateVisitCountHandler,
+		newVideoServiceUpdateVisitCountArgs,
+		newVideoServiceUpdateVisitCountResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"GetVideoVisitCount": kitex.NewMethodInfo(
+		getVideoVisitCountHandler,
+		newVideoServiceGetVideoVisitCountArgs,
+		newVideoServiceGetVideoVisitCountResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
@@ -300,24 +314,6 @@ func newVideoServiceSearchResult() interface{} {
 	return video.NewVideoServiceSearchResult()
 }
 
-func visitHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*video.VideoServiceVisitArgs)
-	realResult := result.(*video.VideoServiceVisitResult)
-	success, err := handler.(video.VideoService).Visit(ctx, realArg.Request)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newVideoServiceVisitArgs() interface{} {
-	return video.NewVideoServiceVisitArgs()
-}
-
-func newVideoServiceVisitResult() interface{} {
-	return video.NewVideoServiceVisitResult()
-}
-
 func infoHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	realArg := arg.(*video.VideoServiceInfoArgs)
 	realResult := result.(*video.VideoServiceInfoResult)
@@ -352,6 +348,60 @@ func newVideoServiceDeleteArgs() interface{} {
 
 func newVideoServiceDeleteResult() interface{} {
 	return video.NewVideoServiceDeleteResult()
+}
+
+func idListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceIdListArgs)
+	realResult := result.(*video.VideoServiceIdListResult)
+	success, err := handler.(video.VideoService).IdList(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceIdListArgs() interface{} {
+	return video.NewVideoServiceIdListArgs()
+}
+
+func newVideoServiceIdListResult() interface{} {
+	return video.NewVideoServiceIdListResult()
+}
+
+func updateVisitCountHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceUpdateVisitCountArgs)
+	realResult := result.(*video.VideoServiceUpdateVisitCountResult)
+	success, err := handler.(video.VideoService).UpdateVisitCount(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceUpdateVisitCountArgs() interface{} {
+	return video.NewVideoServiceUpdateVisitCountArgs()
+}
+
+func newVideoServiceUpdateVisitCountResult() interface{} {
+	return video.NewVideoServiceUpdateVisitCountResult()
+}
+
+func getVideoVisitCountHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceGetVideoVisitCountArgs)
+	realResult := result.(*video.VideoServiceGetVideoVisitCountResult)
+	success, err := handler.(video.VideoService).GetVideoVisitCount(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceGetVideoVisitCountArgs() interface{} {
+	return video.NewVideoServiceGetVideoVisitCountArgs()
+}
+
+func newVideoServiceGetVideoVisitCountResult() interface{} {
+	return video.NewVideoServiceGetVideoVisitCountResult()
 }
 
 type kClient struct {
@@ -444,16 +494,6 @@ func (p *kClient) Search(ctx context.Context, request *video.VideoSearchRequest)
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) Visit(ctx context.Context, request *video.VideoVisitRequest) (r *video.VideoVisitResponse, err error) {
-	var _args video.VideoServiceVisitArgs
-	_args.Request = request
-	var _result video.VideoServiceVisitResult
-	if err = p.c.Call(ctx, "Visit", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
 func (p *kClient) Info(ctx context.Context, request *video.VideoInfoRequest) (r *video.VideoInfoResponse, err error) {
 	var _args video.VideoServiceInfoArgs
 	_args.Request = request
@@ -469,6 +509,36 @@ func (p *kClient) Delete(ctx context.Context, request *video.VideoDeleteRequest)
 	_args.Request = request
 	var _result video.VideoServiceDeleteResult
 	if err = p.c.Call(ctx, "Delete", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) IdList(ctx context.Context, request *video.VideoIdListRequest) (r *video.VideoIdListResponse, err error) {
+	var _args video.VideoServiceIdListArgs
+	_args.Request = request
+	var _result video.VideoServiceIdListResult
+	if err = p.c.Call(ctx, "IdList", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest) (r *video.UpdateVisitCountResponse, err error) {
+	var _args video.VideoServiceUpdateVisitCountArgs
+	_args.Request = request
+	var _result video.VideoServiceUpdateVisitCountResult
+	if err = p.c.Call(ctx, "UpdateVisitCount", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetVideoVisitCount(ctx context.Context, request *video.GetVideoVisitCountRequest) (r *video.GetVideoVisitCountResponse, err error) {
+	var _args video.VideoServiceGetVideoVisitCountArgs
+	_args.Request = request
+	var _result video.VideoServiceGetVideoVisitCountResult
+	if err = p.c.Call(ctx, "GetVideoVisitCount", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

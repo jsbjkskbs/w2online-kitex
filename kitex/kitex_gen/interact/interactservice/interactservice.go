@@ -48,6 +48,27 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"VideoVisit": kitex.NewMethodInfo(
+		videoVisitHandler,
+		newInteractServiceVideoVisitArgs,
+		newInteractServiceVideoVisitResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"VideoPopularList": kitex.NewMethodInfo(
+		videoPopularListHandler,
+		newInteractServiceVideoPopularListArgs,
+		newInteractServiceVideoPopularListResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"DeleteVideoInfo": kitex.NewMethodInfo(
+		deleteVideoInfoHandler,
+		newInteractServiceDeleteVideoInfoArgs,
+		newInteractServiceDeleteVideoInfoResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -204,6 +225,60 @@ func newInteractServiceCommentDeleteResult() interface{} {
 	return interact.NewInteractServiceCommentDeleteResult()
 }
 
+func videoVisitHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*interact.InteractServiceVideoVisitArgs)
+	realResult := result.(*interact.InteractServiceVideoVisitResult)
+	success, err := handler.(interact.InteractService).VideoVisit(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newInteractServiceVideoVisitArgs() interface{} {
+	return interact.NewInteractServiceVideoVisitArgs()
+}
+
+func newInteractServiceVideoVisitResult() interface{} {
+	return interact.NewInteractServiceVideoVisitResult()
+}
+
+func videoPopularListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*interact.InteractServiceVideoPopularListArgs)
+	realResult := result.(*interact.InteractServiceVideoPopularListResult)
+	success, err := handler.(interact.InteractService).VideoPopularList(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newInteractServiceVideoPopularListArgs() interface{} {
+	return interact.NewInteractServiceVideoPopularListArgs()
+}
+
+func newInteractServiceVideoPopularListResult() interface{} {
+	return interact.NewInteractServiceVideoPopularListResult()
+}
+
+func deleteVideoInfoHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*interact.InteractServiceDeleteVideoInfoArgs)
+	realResult := result.(*interact.InteractServiceDeleteVideoInfoResult)
+	success, err := handler.(interact.InteractService).DeleteVideoInfo(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newInteractServiceDeleteVideoInfoArgs() interface{} {
+	return interact.NewInteractServiceDeleteVideoInfoArgs()
+}
+
+func newInteractServiceDeleteVideoInfoResult() interface{} {
+	return interact.NewInteractServiceDeleteVideoInfoResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -259,6 +334,36 @@ func (p *kClient) CommentDelete(ctx context.Context, request *interact.CommentDe
 	_args.Request = request
 	var _result interact.InteractServiceCommentDeleteResult
 	if err = p.c.Call(ctx, "CommentDelete", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) VideoVisit(ctx context.Context, request *interact.VideoVisitRequest) (r *interact.VideoVisitResponse, err error) {
+	var _args interact.InteractServiceVideoVisitArgs
+	_args.Request = request
+	var _result interact.InteractServiceVideoVisitResult
+	if err = p.c.Call(ctx, "VideoVisit", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) VideoPopularList(ctx context.Context, request *interact.VideoPopularListRequest) (r *interact.VideoPopularListResponse, err error) {
+	var _args interact.InteractServiceVideoPopularListArgs
+	_args.Request = request
+	var _result interact.InteractServiceVideoPopularListResult
+	if err = p.c.Call(ctx, "VideoPopularList", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) DeleteVideoInfo(ctx context.Context, request *interact.DeleteVideoInfoRequest) (r *interact.DeleteVideoInfoResponse, err error) {
+	var _args interact.InteractServiceDeleteVideoInfoArgs
+	_args.Request = request
+	var _result interact.InteractServiceDeleteVideoInfoResult
+	if err = p.c.Call(ctx, "DeleteVideoInfo", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

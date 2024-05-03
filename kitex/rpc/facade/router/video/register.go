@@ -1,6 +1,7 @@
 package video
 
 import (
+	"work/rpc/facade/handlers/handler_interact"
 	"work/rpc/facade/handlers/handler_video"
 	"work/rpc/facade/router/auth"
 
@@ -36,7 +37,7 @@ func Register(h *server.Hertz) {
 		}
 		{
 			_visit := _video.Group("/visit")
-			_visit.GET("/:id", handler_video.VideoVisit)
+			_visit.GET("/:id", handler_interact.VideoVisit)
 		}
 	}
 }
