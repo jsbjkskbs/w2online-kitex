@@ -48,13 +48,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
-	"VideoVisit": kitex.NewMethodInfo(
-		videoVisitHandler,
-		newInteractServiceVideoVisitArgs,
-		newInteractServiceVideoVisitResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
 	"VideoPopularList": kitex.NewMethodInfo(
 		videoPopularListHandler,
 		newInteractServiceVideoPopularListArgs,
@@ -225,24 +218,6 @@ func newInteractServiceCommentDeleteResult() interface{} {
 	return interact.NewInteractServiceCommentDeleteResult()
 }
 
-func videoVisitHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*interact.InteractServiceVideoVisitArgs)
-	realResult := result.(*interact.InteractServiceVideoVisitResult)
-	success, err := handler.(interact.InteractService).VideoVisit(ctx, realArg.Request)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newInteractServiceVideoVisitArgs() interface{} {
-	return interact.NewInteractServiceVideoVisitArgs()
-}
-
-func newInteractServiceVideoVisitResult() interface{} {
-	return interact.NewInteractServiceVideoVisitResult()
-}
-
 func videoPopularListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	realArg := arg.(*interact.InteractServiceVideoPopularListArgs)
 	realResult := result.(*interact.InteractServiceVideoPopularListResult)
@@ -334,16 +309,6 @@ func (p *kClient) CommentDelete(ctx context.Context, request *interact.CommentDe
 	_args.Request = request
 	var _result interact.InteractServiceCommentDeleteResult
 	if err = p.c.Call(ctx, "CommentDelete", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) VideoVisit(ctx context.Context, request *interact.VideoVisitRequest) (r *interact.VideoVisitResponse, err error) {
-	var _args interact.InteractServiceVideoVisitArgs
-	_args.Request = request
-	var _result interact.InteractServiceVideoVisitResult
-	if err = p.c.Call(ctx, "VideoVisit", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

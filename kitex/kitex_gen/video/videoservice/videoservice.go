@@ -90,6 +90,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"VideoVisit": kitex.NewMethodInfo(
+		videoVisitHandler,
+		newVideoServiceVideoVisitArgs,
+		newVideoServiceVideoVisitResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 	"UpdateVisitCount": kitex.NewMethodInfo(
 		updateVisitCountHandler,
 		newVideoServiceUpdateVisitCountArgs,
@@ -101,6 +108,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		getVideoVisitCountHandler,
 		newVideoServiceGetVideoVisitCountArgs,
 		newVideoServiceGetVideoVisitCountResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
+	"GetVideoVisitCountInRedis": kitex.NewMethodInfo(
+		getVideoVisitCountInRedisHandler,
+		newVideoServiceGetVideoVisitCountInRedisArgs,
+		newVideoServiceGetVideoVisitCountInRedisResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
@@ -368,6 +382,24 @@ func newVideoServiceIdListResult() interface{} {
 	return video.NewVideoServiceIdListResult()
 }
 
+func videoVisitHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceVideoVisitArgs)
+	realResult := result.(*video.VideoServiceVideoVisitResult)
+	success, err := handler.(video.VideoService).VideoVisit(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceVideoVisitArgs() interface{} {
+	return video.NewVideoServiceVideoVisitArgs()
+}
+
+func newVideoServiceVideoVisitResult() interface{} {
+	return video.NewVideoServiceVideoVisitResult()
+}
+
 func updateVisitCountHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	realArg := arg.(*video.VideoServiceUpdateVisitCountArgs)
 	realResult := result.(*video.VideoServiceUpdateVisitCountResult)
@@ -402,6 +434,24 @@ func newVideoServiceGetVideoVisitCountArgs() interface{} {
 
 func newVideoServiceGetVideoVisitCountResult() interface{} {
 	return video.NewVideoServiceGetVideoVisitCountResult()
+}
+
+func getVideoVisitCountInRedisHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*video.VideoServiceGetVideoVisitCountInRedisArgs)
+	realResult := result.(*video.VideoServiceGetVideoVisitCountInRedisResult)
+	success, err := handler.(video.VideoService).GetVideoVisitCountInRedis(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newVideoServiceGetVideoVisitCountInRedisArgs() interface{} {
+	return video.NewVideoServiceGetVideoVisitCountInRedisArgs()
+}
+
+func newVideoServiceGetVideoVisitCountInRedisResult() interface{} {
+	return video.NewVideoServiceGetVideoVisitCountInRedisResult()
 }
 
 type kClient struct {
@@ -524,6 +574,16 @@ func (p *kClient) IdList(ctx context.Context, request *video.VideoIdListRequest)
 	return _result.GetSuccess(), nil
 }
 
+func (p *kClient) VideoVisit(ctx context.Context, request *video.VideoVisitRequest) (r *video.VideoVisitResponse, err error) {
+	var _args video.VideoServiceVideoVisitArgs
+	_args.Request = request
+	var _result video.VideoServiceVideoVisitResult
+	if err = p.c.Call(ctx, "VideoVisit", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
 func (p *kClient) UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest) (r *video.UpdateVisitCountResponse, err error) {
 	var _args video.VideoServiceUpdateVisitCountArgs
 	_args.Request = request
@@ -539,6 +599,16 @@ func (p *kClient) GetVideoVisitCount(ctx context.Context, request *video.GetVide
 	_args.Request = request
 	var _result video.VideoServiceGetVideoVisitCountResult
 	if err = p.c.Call(ctx, "GetVideoVisitCount", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetVideoVisitCountInRedis(ctx context.Context, request *video.GetVideoVisitCountInRedisRequest) (r *video.GetVideoVisitCountInRedisResponse, err error) {
+	var _args video.VideoServiceGetVideoVisitCountInRedisArgs
+	_args.Request = request
+	var _result video.VideoServiceGetVideoVisitCountInRedisResult
+	if err = p.c.Call(ctx, "GetVideoVisitCountInRedis", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -3,7 +3,6 @@ package main
 import (
 	"net"
 	video "work/kitex_gen/video/videoservice"
-	"work/pkg/jaeger_suite"
 	conf "work/rpc/rpc_conf"
 	"work/rpc/video/common/conf_loader"
 	"work/rpc/video/common/dustman"
@@ -24,6 +23,7 @@ func Init() {
 
 func main() {
 	Init()
+	//pprof.Load()
 
 	r, err := etcd.NewEtcdRegistry([]string{conf.EtcdAddress})
 	if err != nil {
@@ -34,14 +34,14 @@ func main() {
 		panic(err)
 	}
 
-	suite, closer := jaeger_suite.NewServerSuite().Init(conf.VideoServiceName)
-	defer closer.Close()
+	//suite, closer := jaeger_suite.NewServerSuite().Init(conf.VideoServiceName)
+	//defer closer.Close()
 
 	svr := video.NewServer(new(VideoServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.VideoServiceName}),
 		server.WithServiceAddr(addr),
 		server.WithRegistry(r),
-		server.WithSuite(suite),
+		//server.WithSuite(suite),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.VideoServiceName}),
 	)
 	err = svr.Run()

@@ -3,7 +3,6 @@ package main
 import (
 	"net"
 	interact "work/kitex_gen/interact/interactservice"
-	"work/pkg/jaeger_suite"
 	"work/rpc/interact/common/conf_loader"
 	"work/rpc/interact/common/syncman"
 	"work/rpc/interact/infras/client"
@@ -24,6 +23,7 @@ func Init() {
 
 func main() {
 	Init()
+	//pprof.Load()
 
 	r, err := etcd.NewEtcdRegistry([]string{conf.EtcdAddress})
 	if err != nil {
@@ -34,14 +34,14 @@ func main() {
 		panic(err)
 	}
 
-	suite, closer := jaeger_suite.NewServerSuite().Init(conf.InteractServiceName)
-	defer closer.Close()
+	//suite, closer := jaeger_suite.NewServerSuite().Init(conf.InteractServiceName)
+	//defer closer.Close()
 
 	svr := interact.NewServer(new(InteractServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.InteractServiceName}),
 		server.WithServiceAddr(addr),
 		server.WithRegistry(r),
-		server.WithSuite(suite),
+		//server.WithSuite(suite),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.InteractServiceName}),
 	)
 	err = svr.Run()

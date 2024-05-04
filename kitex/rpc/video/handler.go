@@ -313,3 +313,51 @@ func (s *VideoServiceImpl) GetVideoVisitCount(ctx context.Context, request *vide
 	resp.VisitCount = count
 	return resp, nil
 }
+
+// VideoVisit implements the VideoServiceImpl interface.
+func (s *VideoServiceImpl) VideoVisit(ctx context.Context, request *video.VideoVisitRequest) (resp *video.VideoVisitResponse, err error) {
+	// TODO: Your code here...
+	resp = new(video.VideoVisitResponse)
+	resp.Item = &base.Video{}
+
+	data, err := service.NewVideoService(ctx).NewVideoVisitEvent(request)
+	if err != nil {
+		respErr := utils.CreateBaseHttpResponse(err)
+		resp.Base = &base.Status{
+			Code: respErr.StatusCode,
+			Msg:  respErr.StatusMsg,
+		}
+		resp.Item = &base.Video{}
+		return resp, nil
+	}
+
+	resp.Base = &base.Status{
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
+	}
+	resp.Item = data
+	return resp, nil
+}
+
+// GetVideoVisitCountInRedis implements the VideoServiceImpl interface.
+func (s *VideoServiceImpl) GetVideoVisitCountInRedis(ctx context.Context, request *video.GetVideoVisitCountInRedisRequest) (resp *video.GetVideoVisitCountInRedisResponse, err error) {
+	// TODO: Your code here...
+	resp = new(video.GetVideoVisitCountInRedisResponse)
+
+	data, err := service.NewVideoService(ctx).NewGetVisitCountInRedisEvent(request)
+	if err != nil {
+		respErr := utils.CreateBaseHttpResponse(err)
+		resp.Base = &base.Status{
+			Code: respErr.StatusCode,
+			Msg:  respErr.StatusMsg,
+		}
+		return resp, nil
+	}
+
+	resp.Base = &base.Status{
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
+	}
+	resp.VisitCount = data
+	return resp, nil
+}

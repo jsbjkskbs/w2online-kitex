@@ -126,31 +126,6 @@ func (s *InteractServiceImpl) CommentDelete(ctx context.Context, request *intera
 	return resp, nil
 }
 
-// VideoVisit implements the InteractServiceImpl interface.
-func (s *InteractServiceImpl) VideoVisit(ctx context.Context, request *interact.VideoVisitRequest) (resp *interact.VideoVisitResponse, err error) {
-	// TODO: Your code here...
-	resp = new(interact.VideoVisitResponse)
-	resp.Item = &base.Video{}
-
-	data, err := service.NewInteractService(ctx).NewVideoVisitEvent(request)
-	if err != nil {
-		respErr := utils.CreateBaseHttpResponse(err)
-		resp.Base = &base.Status{
-			Code: respErr.StatusCode,
-			Msg:  respErr.StatusMsg,
-		}
-		resp.Item = &base.Video{}
-		return resp, nil
-	}
-
-	resp.Base = &base.Status{
-		Code: errno.NoError.Code,
-		Msg:  errno.NoError.Message,
-	}
-	resp.Item = data
-	return resp, nil
-}
-
 // VideoPopularList implements the InteractServiceImpl interface.
 func (s *InteractServiceImpl) VideoPopularList(ctx context.Context, request *interact.VideoPopularListRequest) (resp *interact.VideoPopularListResponse, err error) {
 	// TODO: Your code here...

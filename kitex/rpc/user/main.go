@@ -3,7 +3,6 @@ package main
 import (
 	"net"
 	user "work/kitex_gen/user/userservice"
-	"work/pkg/jaeger_suite"
 	conf "work/rpc/rpc_conf"
 	"work/rpc/user/common/conf_loader"
 
@@ -19,6 +18,7 @@ func Init() {
 
 func main() {
 	Init()
+	//pprof.Load()
 
 	r, err := etcd.NewEtcdRegistry([]string{conf.EtcdAddress})
 	if err != nil {
@@ -30,14 +30,14 @@ func main() {
 		panic(err)
 	}
 
-	suite, closer := jaeger_suite.NewServerSuite().Init(conf.UserServiceName)
-	defer closer.Close()
+	//suite, closer := jaeger_suite.NewServerSuite().Init(conf.UserServiceName)
+	//defer closer.Close()
 
 	svr := user.NewServer(new(UserServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.UserServiceName}),
 		server.WithServiceAddr(addr),
 		server.WithRegistry(r),
-		server.WithSuite(suite),
+		//server.WithSuite(suite),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.UserServiceName}),
 	)
 

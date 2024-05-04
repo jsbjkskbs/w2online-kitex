@@ -64,16 +64,6 @@ struct CommentDeleteResponse {
     1: base.Status base;
 }
 
-struct VideoVisitRequest {
-    1: required string from_ip
-    2: required string video_id
-}
-
-struct VideoVisitResponse {
-    1: base.Status base;
-    2: base.Video item;
-}
-
 struct VideoPopularListRequest {
     1: i64 page_num
     2: i64 page_size
@@ -101,7 +91,6 @@ service InteractService {
     CommentPublishResponse CommentPublish(1: CommentPublishRequest request);
     CommentListResponse CommentList(1: CommentListRequest request);
     CommentDeleteResponse CommentDelete(1: CommentDeleteRequest request);
-    VideoVisitResponse VideoVisit(1: VideoVisitRequest request);
     VideoPopularListResponse VideoPopularList(1: VideoPopularListRequest request);
     DeleteVideoInfoResponse DeleteVideoInfo(1: DeleteVideoInfoRequest request);
 }

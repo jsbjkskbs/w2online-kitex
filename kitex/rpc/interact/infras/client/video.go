@@ -102,3 +102,15 @@ func GetVideoVisitCount(ctx context.Context, req *video.GetVideoVisitCountReques
 
 	return fmt.Sprint(resp.VisitCount), nil
 }
+
+func GetVideoVisitCountInRedis(ctx context.Context, req *video.GetVideoVisitCountInRedisRequest) (int64, error) {
+	resp, err := videoClient.GetVideoVisitCountInRedis(ctx, req)
+	if err != nil {
+		return -1, err
+	}
+	if resp.Base.Code != errno.NoError.Code {
+		return -1, errno.NewErrorMessage(errno.BaseError.Code, resp.Base.Msg)
+	}
+
+	return resp.VisitCount, nil
+}

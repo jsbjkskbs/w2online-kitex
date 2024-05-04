@@ -1,9 +1,7 @@
 package redis
 
 import (
-	"strconv"
 	"sync"
-	"work/pkg/errno"
 	"work/rpc/interact/dal/db"
 
 	"github.com/go-redis/redis"
@@ -22,19 +20,7 @@ func PutVideoLikeInfo(vid string, uidList *[]string) error {
 	return nil
 }
 
-func PutVideoVisitInfo(vid, visitCount string) error {
-	score, _ := strconv.ParseFloat(visitCount, 64)
-	_, err := redisDBVideoInfo.ZAdd(`visit`, redis.Z{Score: score, Member: vid}).Result()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func AppendVideoLikeInfo(vid, uid string) error {
-	if !IsVideoExist(vid) {
-		return errno.InfomationNotExist
-	}
 	_, err := redisDBVideoInfo.ZAdd(`nl:`+vid, redis.Z{Score: 1, Member: uid}).Result()
 	if err != nil {
 		return err
@@ -60,22 +46,11 @@ func DeleteVideoLikeInfoFromDynamicSpace(vid, uid string) error {
 }
 
 func RemoveVideoLikeInfo(vid, uid string) error {
-	if !IsVideoExist(vid) {
-		return errno.InfomationNotExist
-	}
 	_, err := redisDBVideoInfo.ZAdd(`nl:`+vid, redis.Z{Score: 2, Member: uid}).Result()
 	if err != nil {
 		return err
 	}
 	if _, err := redisDBVideoInfo.SRem(`l:`+vid, uid).Result(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func IncrVideoVisitInfo(vid string) error {
-	_, err := redisDBVideoInfo.ZIncrBy(`visit`, 1, vid).Result()
-	if err != nil {
 		return err
 	}
 	return nil
@@ -139,29 +114,12 @@ func GetVideoLikeCount(vid string) (int64, error) {
 	}
 }
 
-func GetVideoVisitCount(vid string) (int64, error) {
-	_, err := redisDBVideoInfo.ZRank(`visit`, vid).Result()
-	if err != nil {
-		return -1, err
-	}
-	s, err := redisDBVideoInfo.ZScore(`visit`, vid).Result()
-	if err != nil {
-		return -1, err
-	}
-	return int64(s), nil
-}
-
 func GetVideoPopularList(pageNum, pageSize int64) (*[]string, error) {
 	list, err := redisDBVideoInfo.ZRevRange(`visit`, (pageNum-1)*pageSize, pageNum*pageSize-1).Result()
 	if err != nil {
 		return nil, err
 	}
 	return &list, err
-}
-
-func IsVideoExist(vid string) bool {
-	_, err := redisDBVideoInfo.ZScore(`visit`, vid).Result()
-	return err == nil
 }
 
 func DeleteVideoAndAllAbout(vid string) error {
@@ -175,7 +133,6 @@ func DeleteVideoAndAllAbout(vid string) error {
 
 	videoPipe.Del(`nl:` + vid)
 	videoPipe.Del(`l:` + vid)
-	videoPipe.ZRem(`visit`, vid)
 
 	for _, item := range *commentList {
 		commentPipe.Del(`l:` + item)

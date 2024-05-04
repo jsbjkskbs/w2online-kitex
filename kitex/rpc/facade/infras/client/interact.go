@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"time"
-	"work/kitex_gen/base"
 	"work/kitex_gen/interact"
 	"work/kitex_gen/interact/interactservice"
 	"work/pkg/errno"
@@ -100,16 +99,4 @@ func LikeList(ctx context.Context, req *interact.LikeListRequest) (*interact.Lik
 	}
 
 	return resp.Data, nil
-}
-
-func VideoVisit(ctx context.Context, req *interact.VideoVisitRequest) (*base.Video, error) {
-	resp, err := interactClient.VideoVisit(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	if resp.Base.Code != errno.NoError.Code {
-		return nil, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
-	}
-
-	return resp.Item, nil
 }

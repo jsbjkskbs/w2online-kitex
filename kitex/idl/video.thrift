@@ -124,6 +124,16 @@ struct VideoDeleteResponse {
     1: base.Status base;
 }
 
+struct VideoVisitRequest {
+    1: required string from_ip
+    2: required string video_id
+}
+
+struct VideoVisitResponse {
+    1: base.Status base;
+    2: base.Video item;
+}
+
 struct VideoIdListRequest {
     1: i64 page_num;
     2: i64 page_size;
@@ -153,6 +163,15 @@ struct GetVideoVisitCountResponse {
     2: i64 visit_count;
 }
 
+struct GetVideoVisitCountInRedisRequest {
+    1: string video_id;
+}
+
+struct GetVideoVisitCountInRedisResponse {
+    1: i64 visit_count;
+    2: base.Status base;
+}
+
 service VideoService {
     VideoFeedResponse Feed(1: VideoFeedRequest request);
     VideoPublishStartResponse VideoPublishStart(1: VideoPublishStartRequest request);
@@ -165,6 +184,8 @@ service VideoService {
     VideoInfoResponse Info(1: VideoInfoRequest request);
     VideoDeleteResponse Delete(1: VideoDeleteRequest request);
     VideoIdListResponse IdList(1: VideoIdListRequest request);
+    VideoVisitResponse VideoVisit(1: VideoVisitRequest request);
     UpdateVisitCountResponse UpdateVisitCount(1: UpdateVisitCountRequest request);
     GetVideoVisitCountResponse GetVideoVisitCount(1: GetVideoVisitCountRequest request);
+    GetVideoVisitCountInRedisResponse GetVideoVisitCountInRedis(1: GetVideoVisitCountInRedisRequest request);
 }

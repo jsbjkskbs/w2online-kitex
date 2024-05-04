@@ -3,7 +3,7 @@ package main
 import (
 	"net"
 	relation "work/kitex_gen/relation/relationservice"
-	"work/pkg/jaeger_suite"
+	"work/pkg/pprof"
 	"work/rpc/relation/common/conf_loader"
 	"work/rpc/relation/infras/client"
 	conf "work/rpc/rpc_conf"
@@ -21,6 +21,7 @@ func Init() {
 
 func main() {
 	Init()
+	pprof.Load()
 
 	r, err := etcd.NewEtcdRegistry([]string{conf.EtcdAddress})
 	if err != nil {
@@ -31,14 +32,14 @@ func main() {
 		panic(err)
 	}
 
-	suite, closer := jaeger_suite.NewServerSuite().Init(conf.RelationServiceName)
-	defer closer.Close()
+	//suite, closer := jaeger_suite.NewServerSuite().Init(conf.RelationServiceName)
+	//defer closer.Close()
 
 	svr := relation.NewServer(new(RelationServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.RelationServiceName}),
 		server.WithServiceAddr(addr),
 		server.WithRegistry(r),
-		server.WithSuite(suite),
+		//server.WithSuite(suite),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: conf.RelationServiceName}),
 	)
 	err = svr.Run()

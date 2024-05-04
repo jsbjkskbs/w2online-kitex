@@ -16,7 +16,6 @@ type Client interface {
 	CommentPublish(ctx context.Context, request *interact.CommentPublishRequest, callOptions ...callopt.Option) (r *interact.CommentPublishResponse, err error)
 	CommentList(ctx context.Context, request *interact.CommentListRequest, callOptions ...callopt.Option) (r *interact.CommentListResponse, err error)
 	CommentDelete(ctx context.Context, request *interact.CommentDeleteRequest, callOptions ...callopt.Option) (r *interact.CommentDeleteResponse, err error)
-	VideoVisit(ctx context.Context, request *interact.VideoVisitRequest, callOptions ...callopt.Option) (r *interact.VideoVisitResponse, err error)
 	VideoPopularList(ctx context.Context, request *interact.VideoPopularListRequest, callOptions ...callopt.Option) (r *interact.VideoPopularListResponse, err error)
 	DeleteVideoInfo(ctx context.Context, request *interact.DeleteVideoInfoRequest, callOptions ...callopt.Option) (r *interact.DeleteVideoInfoResponse, err error)
 }
@@ -73,11 +72,6 @@ func (p *kInteractServiceClient) CommentList(ctx context.Context, request *inter
 func (p *kInteractServiceClient) CommentDelete(ctx context.Context, request *interact.CommentDeleteRequest, callOptions ...callopt.Option) (r *interact.CommentDeleteResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.CommentDelete(ctx, request)
-}
-
-func (p *kInteractServiceClient) VideoVisit(ctx context.Context, request *interact.VideoVisitRequest, callOptions ...callopt.Option) (r *interact.VideoVisitResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.VideoVisit(ctx, request)
 }
 
 func (p *kInteractServiceClient) VideoPopularList(ctx context.Context, request *interact.VideoPopularListRequest, callOptions ...callopt.Option) (r *interact.VideoPopularListResponse, err error) {

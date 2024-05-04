@@ -187,18 +187,41 @@ func getVideoComment(request *interact.CommentListRequest) (*[]*base.Comment, er
 	if err != nil {
 		return nil, errno.ServiceError
 	}
+	var (
+		wg         sync.WaitGroup
+		errChan    = make(chan error, 3)
+		d          *db.Comment
+		likeCount  int64
+		childCount int64
+	)
 	for _, item := range *list {
-		d, err := db.GetCommentInfo(item)
-		if err != nil {
-			return nil, errno.ServiceError
-		}
-		likeCount, err := db.GetCommentLikeCount(item)
-		if err != nil {
-			return nil, errno.ServiceError
-		}
-		childCount, err := db.GetChildCommentCount(item)
-		if err != nil {
-			return nil, errno.ServiceError
+		wg.Add(3)
+		go func() {
+			d, err = db.GetCommentInfo(item)
+			if err != nil {
+				errChan <- err
+			}
+			wg.Done()
+		}()
+		go func() {
+			likeCount, err = redis.GetVideoLikeCount(item)
+			if err != nil {
+				errChan <- err
+			}
+			wg.Done()
+		}()
+		go func() {
+			childCount, err = db.GetChildCommentCount(item)
+			if err != nil {
+				errChan <- err
+			}
+			wg.Done()
+		}()
+		wg.Wait()
+		select {
+		case result := <-errChan:
+			return nil, result
+		default:
 		}
 		data = append(data, &base.Comment{
 			Id:         fmt.Sprint(d.Id),
@@ -222,18 +245,41 @@ func getCommentComment(request *interact.CommentListRequest) (*[]*base.Comment, 
 	if err != nil {
 		return nil, errno.ServiceError
 	}
+	var (
+		wg         sync.WaitGroup
+		errChan    = make(chan error, 3)
+		d          *db.Comment
+		likeCount  int64
+		childCount int64
+	)
 	for _, item := range *list {
-		d, err := db.GetCommentInfo(item)
-		if err != nil {
-			return nil, errno.ServiceError
-		}
-		likeCount, err := db.GetCommentLikeCount(item)
-		if err != nil {
-			return nil, errno.ServiceError
-		}
-		childCount, err := db.GetChildCommentCount(item)
-		if err != nil {
-			return nil, errno.ServiceError
+		wg.Add(3)
+		go func() {
+			d, err = db.GetCommentInfo(item)
+			if err != nil {
+				errChan <- err
+			}
+			wg.Done()
+		}()
+		go func() {
+			likeCount, err = redis.GetCommentLikeCount(item)
+			if err != nil {
+				errChan <- err
+			}
+			wg.Done()
+		}()
+		go func() {
+			childCount, err = db.GetChildCommentCount(item)
+			if err != nil {
+				errChan <- err
+			}
+			wg.Done()
+		}()
+		wg.Wait()
+		select {
+		case result := <-errChan:
+			return nil, result
+		default:
 		}
 		data = append(data, &base.Comment{
 			Id:         fmt.Sprint(d.Id),
@@ -311,14 +357,6 @@ func deleteComment(request *interact.CommentDeleteRequest) error {
 	return nil
 }
 
-func (service InteractService) NewVideoVisitEvent(request *interact.VideoVisitRequest) (*base.Video, error) {
-	data, err := client.VideoInfo(context.Background(), &video.VideoInfoRequest{VideoId: request.VideoId})
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
-}
-
 func (service InteractService) NewVideoPopularListEvent(request *interact.VideoPopularListRequest) (*[]string, error) {
 	list, err := redis.GetVideoPopularList(request.PageNum, request.PageSize)
 	if err != nil {
@@ -327,8 +365,8 @@ func (service InteractService) NewVideoPopularListEvent(request *interact.VideoP
 	return list, nil
 }
 
-func (service InteractService) NewDeleteVideoInfoEvent(request *interact.DeleteVideoInfoRequest) (error) {
-	if err := redis.DeleteVideoAndAllAbout(request.VideoId);err!=nil{
+func (service InteractService) NewDeleteVideoInfoEvent(request *interact.DeleteVideoInfoRequest) error {
+	if err := redis.DeleteVideoAndAllAbout(request.VideoId); err != nil {
 		return err
 	}
 	return nil

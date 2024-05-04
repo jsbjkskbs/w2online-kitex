@@ -370,6 +370,44 @@ func (service VideoService) NewGetVisitCountEvent(request *video.GetVideoVisitCo
 	return count, nil
 }
 
+func (service VideoService) NewVideoVisitEvent(request *video.VideoVisitRequest) (*base.Video, error) {
+	var (
+		wg      sync.WaitGroup
+		errChan = make(chan error, 2)
+		data    *base.Video
+		err     error
+	)
+	wg.Add(2)
+	go func() {
+		data, err = elasticsearch.GetVideoDoc(request.VideoId)
+		if err != nil {
+			errChan <- err
+		}
+		wg.Done()
+	}()
+	go func() {
+		if err = redis.IncrVideoVisitInfo(request.VideoId); err != nil {
+			errChan <- err
+		}
+		wg.Done()
+	}()
+	wg.Wait()
+	select {
+	case result := <-errChan:
+		return nil, result
+	default:
+	}
+	return data, nil
+}
+
+func (service VideoService) NewGetVisitCountInRedisEvent(request *video.GetVideoVisitCountInRedisRequest) (int64, error) {
+	data, err := redis.GetVideoVisitCount(request.VideoId)
+	if err != nil {
+		return -1, err
+	}
+	return data, nil
+}
+
 func (service VideoService) deleteTempDir(path string) error {
 	return os.RemoveAll(path)
 }

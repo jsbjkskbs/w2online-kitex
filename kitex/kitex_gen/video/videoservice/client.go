@@ -22,8 +22,10 @@ type Client interface {
 	Info(ctx context.Context, request *video.VideoInfoRequest, callOptions ...callopt.Option) (r *video.VideoInfoResponse, err error)
 	Delete(ctx context.Context, request *video.VideoDeleteRequest, callOptions ...callopt.Option) (r *video.VideoDeleteResponse, err error)
 	IdList(ctx context.Context, request *video.VideoIdListRequest, callOptions ...callopt.Option) (r *video.VideoIdListResponse, err error)
+	VideoVisit(ctx context.Context, request *video.VideoVisitRequest, callOptions ...callopt.Option) (r *video.VideoVisitResponse, err error)
 	UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest, callOptions ...callopt.Option) (r *video.UpdateVisitCountResponse, err error)
 	GetVideoVisitCount(ctx context.Context, request *video.GetVideoVisitCountRequest, callOptions ...callopt.Option) (r *video.GetVideoVisitCountResponse, err error)
+	GetVideoVisitCountInRedis(ctx context.Context, request *video.GetVideoVisitCountInRedisRequest, callOptions ...callopt.Option) (r *video.GetVideoVisitCountInRedisResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -110,6 +112,11 @@ func (p *kVideoServiceClient) IdList(ctx context.Context, request *video.VideoId
 	return p.kClient.IdList(ctx, request)
 }
 
+func (p *kVideoServiceClient) VideoVisit(ctx context.Context, request *video.VideoVisitRequest, callOptions ...callopt.Option) (r *video.VideoVisitResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.VideoVisit(ctx, request)
+}
+
 func (p *kVideoServiceClient) UpdateVisitCount(ctx context.Context, request *video.UpdateVisitCountRequest, callOptions ...callopt.Option) (r *video.UpdateVisitCountResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.UpdateVisitCount(ctx, request)
@@ -118,4 +125,9 @@ func (p *kVideoServiceClient) UpdateVisitCount(ctx context.Context, request *vid
 func (p *kVideoServiceClient) GetVideoVisitCount(ctx context.Context, request *video.GetVideoVisitCountRequest, callOptions ...callopt.Option) (r *video.GetVideoVisitCountResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetVideoVisitCount(ctx, request)
+}
+
+func (p *kVideoServiceClient) GetVideoVisitCountInRedis(ctx context.Context, request *video.GetVideoVisitCountInRedisRequest, callOptions ...callopt.Option) (r *video.GetVideoVisitCountInRedisResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetVideoVisitCountInRedis(ctx, request)
 }

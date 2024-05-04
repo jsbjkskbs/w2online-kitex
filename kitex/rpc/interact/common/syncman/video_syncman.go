@@ -57,12 +57,16 @@ func (sm VideoSyncman) Run() {
 					PageSize: 1000,
 				}); err != nil {
 					hlog.Warn(err)
+					break
 				}
 				for _, vid := range *vidList {
 					wg.Add(4)
 					go func() {
 						var err error
-						if visitCount, err = redis.GetVideoVisitCount(vid); err != nil {
+						if visitCount, err = client.GetVideoVisitCountInRedis(context.Background(),
+							&video.GetVideoVisitCountInRedisRequest{
+								VideoId: vid,
+							}); err != nil {
 							errChan <- err
 						}
 						wg.Done()
@@ -164,7 +168,7 @@ func videoSyncMwWhenInit() error {
 	for i := 0; !isEnd; i++ {
 		isEnd, list, err = client.VideoIdList(context.Background(), &video.VideoIdListRequest{
 			PageSize: 1000,
-			PageNum: int64(i),
+			PageNum:  int64(i),
 		})
 		if err != nil {
 			return err
@@ -231,29 +235,9 @@ func videoSyncMwWhenInit() error {
 }
 
 func videoSyncDB2Redis(syncList *[]videoSyncData) error {
-	var (
-		wg      sync.WaitGroup
-		errChan = make(chan error, 2)
-	)
 	for _, item := range *syncList {
-		wg.Add(2)
-		go func(vid, visitCount string) {
-			if err := redis.PutVideoVisitInfo(vid, visitCount); err != nil {
-				errChan <- err
-			}
-			wg.Done()
-		}(item.vid, item.visitCount)
-		go func(vid string, likeList *[]string) {
-			if err := redis.PutVideoLikeInfo(vid, likeList); err != nil {
-				errChan <- err
-			}
-			wg.Done()
-		}(item.vid, item.likeList)
-		wg.Wait()
-		select {
-		case result := <-errChan:
-			return result
-		default:
+		if err := redis.PutVideoLikeInfo(item.vid, item.likeList); err != nil {
+			return err
 		}
 	}
 	return nil
