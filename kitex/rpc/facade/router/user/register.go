@@ -44,5 +44,12 @@ func Register(h *server.Hertz) {
 			_register := _user.Group("/register")
 			_register.POST("/", handler_user.UserRegister)
 		}
+		{
+			_image := _user.Group("/image")
+			{
+				_search := _image.Group("/search")
+				_search.PUT("/", handler_user.UserImageSearch)
+			}
+		}
 	}
 }

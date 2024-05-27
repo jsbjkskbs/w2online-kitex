@@ -47,6 +47,7 @@ var (
 	ElasticError  = Errno{Code: elasticErrCode, Message: elasticErrMsg}
 	RabbitMQError = Errno{Code: rabbitMQErrCode, Message: rabbitMQErrMsg}
 	OSSError      = Errno{Code: ossErrCode, Message: ossErrMsg}
+	MilvusError   = Errno{Code: milvusErrCode, Message: milvusErrMsg}
 )
 
 // 提供转换方法

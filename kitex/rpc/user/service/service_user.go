@@ -9,6 +9,7 @@ import (
 	"work/pkg/errno"
 	"work/pkg/utils"
 	"work/rpc/user/dal/db"
+	"work/rpc/user/infras/milvus"
 	"work/rpc/user/infras/oss"
 )
 
@@ -96,6 +97,20 @@ func (service UserService) NewMfaBindEvent(request *user.AuthMfaBindRequest) err
 		return errno.ServiceError
 	}
 	return nil
+}
+
+func (service UserService) NewImageSearchEvent(request *user.UserImageSearchRequest) (string, error) {
+	v := []float32{}
+	//TODO: 我的AI呢？
+
+	url, err := milvus.ImageVectorSearch(v)
+	if err != nil {
+		return ``, errno.MilvusError
+	}
+	if len(url) == 0 {
+		return ``, errno.InfomationNotExist
+	}
+	return url, nil
 }
 
 func (service UserService) uploadAvatarToOss(uid string, avatarRawData []byte, filesize int64) (*db.User, error) {

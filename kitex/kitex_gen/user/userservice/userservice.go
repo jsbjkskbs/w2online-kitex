@@ -55,6 +55,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"UserImageSearch": kitex.NewMethodInfo(
+		userImageSearchHandler,
+		newUserServiceUserImageSearchArgs,
+		newUserServiceUserImageSearchResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -229,6 +236,24 @@ func newUserServiceAuthMfaBindResult() interface{} {
 	return user.NewUserServiceAuthMfaBindResult()
 }
 
+func userImageSearchHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*user.UserServiceUserImageSearchArgs)
+	realResult := result.(*user.UserServiceUserImageSearchResult)
+	success, err := handler.(user.UserService).UserImageSearch(ctx, realArg.Request)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newUserServiceUserImageSearchArgs() interface{} {
+	return user.NewUserServiceUserImageSearchArgs()
+}
+
+func newUserServiceUserImageSearchResult() interface{} {
+	return user.NewUserServiceUserImageSearchResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -294,6 +319,16 @@ func (p *kClient) AuthMfaBind(ctx context.Context, request *user.AuthMfaBindRequ
 	_args.Request = request
 	var _result user.UserServiceAuthMfaBindResult
 	if err = p.c.Call(ctx, "AuthMfaBind", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) UserImageSearch(ctx context.Context, request *user.UserImageSearchRequest) (r *user.UserImageSearchResponse, err error) {
+	var _args user.UserServiceUserImageSearchArgs
+	_args.Request = request
+	var _result user.UserServiceUserImageSearchResult
+	if err = p.c.Call(ctx, "UserImageSearch", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

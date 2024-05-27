@@ -7,3 +7,6 @@ Oss:
     secretKey: "your secret key"
     accessKey: "your access key"
     url: "your url"
+
+Milvus:
+    address: "localhost:19530"

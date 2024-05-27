@@ -65,6 +65,15 @@ struct AuthMfaBindResponse {
     1: base.Status base;
 }
 
+struct UserImageSearchRequest {
+    1: required binary data;
+}
+
+struct UserImageSearchResponse {
+    1: base.Status base;
+    2: string data;
+}
+
 service UserService {
     UserRegisterResponse Register(1: UserRegisterRequest request);
     UserLoginResponse Login(1: UserLoginRequest request);
@@ -72,4 +81,5 @@ service UserService {
     UserAvatarUploadResponse AvatarUpload(1: UserAvatarUploadRequest request);
     AuthMfaQrcodeResponse AuthMfaQrcode(1: AuthMfaQrcodeRequest request);
     AuthMfaBindResponse AuthMfaBind(1: AuthMfaBindRequest request);
+    UserImageSearchResponse UserImageSearch(1: UserImageSearchRequest request);
 }

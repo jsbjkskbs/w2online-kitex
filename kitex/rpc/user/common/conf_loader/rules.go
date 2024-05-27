@@ -4,6 +4,7 @@ import (
 	"work/pkg/utils/conf_loader"
 	"work/rpc/user/dal"
 	"work/rpc/user/dal/db"
+	"work/rpc/user/infras/milvus"
 	"work/rpc/user/infras/oss"
 
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -52,6 +53,26 @@ func register(_ ...any) {
 			SuccessTrigger: func(v ...any) {
 				hlog.Info("oss config loaded successfully")
 			},
+		},
+		{
+			RuleName: "Milvus",
+			Level:    conf_loader.LevelIgnore,
+
+			ConfLoadMethodParam: []interface{}{},
+			ConfLoadMethod: func(v ...any) error {
+				milvusConf := conf_loader.GlobalConfig.GetStringMapString("Milvus")
+				milvus.Address = milvusConf["address"]
+				milvus.Load()
+				return nil
+			},
+
+			SuccessTriggerParam: []interface{}{},
+			SuccessTrigger:      func(v ...any) {
+				hlog.Info("Milvus config loaded successfully")
+			},
+
+			FailedTriggerParam: []interface{}{},
+			FailedTrigger:      func(v ...any) {},
 		},
 	}
 }

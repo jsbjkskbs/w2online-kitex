@@ -113,3 +113,14 @@ func AuthMfaBind(ctx context.Context, req *user.AuthMfaBindRequest) error {
 
 	return nil
 }
+
+func ImageSearch(ctx context.Context, req *user.UserImageSearchRequest) (string, error) {
+	resp, err := userClient.UserImageSearch(ctx, req)
+	if err != nil {
+		return ``, err
+	}
+	if resp.Base.Code != errno.NoError.Code {
+		return ``, errno.NewErrorMessage(resp.Base.Code, resp.Base.Msg)
+	}
+	return resp.Data, nil
+}

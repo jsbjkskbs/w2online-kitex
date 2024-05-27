@@ -17,6 +17,7 @@ type Client interface {
 	AvatarUpload(ctx context.Context, request *user.UserAvatarUploadRequest, callOptions ...callopt.Option) (r *user.UserAvatarUploadResponse, err error)
 	AuthMfaQrcode(ctx context.Context, request *user.AuthMfaQrcodeRequest, callOptions ...callopt.Option) (r *user.AuthMfaQrcodeResponse, err error)
 	AuthMfaBind(ctx context.Context, request *user.AuthMfaBindRequest, callOptions ...callopt.Option) (r *user.AuthMfaBindResponse, err error)
+	UserImageSearch(ctx context.Context, request *user.UserImageSearchRequest, callOptions ...callopt.Option) (r *user.UserImageSearchResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -76,4 +77,9 @@ func (p *kUserServiceClient) AuthMfaQrcode(ctx context.Context, request *user.Au
 func (p *kUserServiceClient) AuthMfaBind(ctx context.Context, request *user.AuthMfaBindRequest, callOptions ...callopt.Option) (r *user.AuthMfaBindResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.AuthMfaBind(ctx, request)
+}
+
+func (p *kUserServiceClient) UserImageSearch(ctx context.Context, request *user.UserImageSearchRequest, callOptions ...callopt.Option) (r *user.UserImageSearchResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.UserImageSearch(ctx, request)
 }

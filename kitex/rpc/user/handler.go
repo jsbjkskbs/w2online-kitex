@@ -173,3 +173,26 @@ func (s *UserServiceImpl) AuthMfaBind(ctx context.Context, request *user.AuthMfa
 	}
 	return resp, nil
 }
+
+// UserImageSearch implements the UserServiceImpl interface.
+func (s *UserServiceImpl) UserImageSearch(ctx context.Context, request *user.UserImageSearchRequest) (resp *user.UserImageSearchResponse, err error) {
+	// TODO: Your code here...
+	resp = new(user.UserImageSearchResponse)
+
+	url, err := service.NewUserService(ctx).NewImageSearchEvent(request)
+	if err != nil {
+		respErr := utils.CreateBaseHttpResponse(err)
+		resp.Base = &base.Status{
+			Code: respErr.StatusCode,
+			Msg:  respErr.StatusMsg,
+		}
+		return resp, nil
+	}
+
+	resp.Base = &base.Status{
+		Code: errno.NoError.Code,
+		Msg:  errno.NoError.Message,
+	}
+	resp.Data = url
+	return resp, nil
+}

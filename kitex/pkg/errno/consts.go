@@ -14,6 +14,7 @@ const (
 	elasticErrCode
 	ossErrCode
 	rabbitMQErrCode
+	milvusErrCode
 
 	rpcErrCode
 
@@ -36,6 +37,7 @@ const (
 	elasticErrMsg  = `something wrong with ElasticSearch`
 	ossErrMsg      = `something wrong with OSS`
 	rabbitMQErrMsg = `something wrong with RabbitMQ`
+	milvusErrMsg   = `something wrong with Milvus`
 
 	rpcErrMsg = `something wrong with rpc`
 
