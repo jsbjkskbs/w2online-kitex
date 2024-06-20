@@ -100,6 +100,7 @@ create table `follows`(
     key `follower_id_index` (follower_id) using btree comment '粉丝索引'
 ) engine =InnoDB auto_increment =10000 default charset =utf8mb4 comment '关注表';
 
+/*
 drop table if exists `messages`;
 create table `messages`(
     `id`           bigint       not null auto_increment comment '自增记录序号',
@@ -114,5 +115,29 @@ create table `messages`(
     key `from_user_id_to_user_id_index` (`from_user_id`,`to_user_id`) using btree comment '发送者与接受者索引',
     key `from_user_id_to_user_id_created_at_index` (`from_user_id`,`to_user_id`,`created_at`) using btree comment '发送者与接受者的时间段索引',
     key `from_user_id_created_at_index` (`from_user_id`,`created_at`) using btree comment '发送者与发送时间索引', /* 一般不会用到 */
+    key `created_at_index` (`created_at`) using btree comment '创建时间索引' /* 一般不会用到 */ 
+) engine =InnoDB auto_increment =10000 default charset =utf8mb4 comment '消息表';
+*/
+
+drop table if exists `messages_0`;
+drop table if exists `messages_1`;
+drop table if exists `messages_2`;
+drop table if exists `messages_3`;
+create table `messages_0`(
+    `id`           bigint       not null auto_increment comment '自增记录序号',
+    `from_user_id` bigint       not null comment '发送者ID',
+    `to_user_id`   bigint       not null comment '接受者ID',
+    `content`      varchar(255) not null comment '内容',
+    `created_at`   bigint    not null comment '创建时间',
+    `deleted_at`   bigint    not null comment '删除时间',
+    primary key (`id`),
+    foreign key (from_user_id) references users(uid) on delete cascade on update cascade,
+    foreign key (to_user_id) references users(uid) on delete cascade on update cascade,
+    key `from_user_id_to_user_id_index` (`from_user_id`,`to_user_id`) using btree comment '发送者与接受者索引',
+    key `from_user_id_to_user_id_created_at_index` (`from_user_id`,`to_user_id`,`created_at`) using btree comment '发送者与接受者的时间段索引',
+    key `from_user_id_created_at_index` (`from_user_id`,`created_at`) using btree comment '发送者与发送时间索引', /* 一般不会用到 */
     key `created_at_index` (`created_at`) using btree comment '创建时间索引' /* 一般不会用到 */
 ) engine =InnoDB auto_increment =10000 default charset =utf8mb4 comment '消息表';
+create table `messages_1` like `messages_0`;
+create table `messages_2` like `messages_0`;
+create table `messages_3` like `messages_0`;

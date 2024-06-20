@@ -6,7 +6,7 @@ func NewSharding(shardingKey string, shardingNumber uint, tableName string) *sha
 	middleware := sharding.Register(sharding.Config{
 		ShardingKey:         shardingKey,
 		NumberOfShards:      shardingNumber,
-		PrimaryKeyGenerator: sharding.PKMySQLSequence,
+		PrimaryKeyGenerator: sharding.PKSnowflake,
 	}, tableName)
 	return middleware
 }
